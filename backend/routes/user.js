@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
 const validateToken = require("../middleWare/validateToken.js");
-const { testUserAPI, CreateUser, LogInUser, UpdateUser, DeleteUser, GetUserById, GetUsers, GetCurrentUser } = require("../controllers/user");
+const { testUserAPI, CreateUser, LogInUser, UpdateUser, DeleteUser, GetUserById, GetUsers, GetCurrentUser, UpdateProfile } = require("../controllers/user");
 
 //@desc Test User API
 //@route GET /api/v1/user
@@ -81,5 +81,15 @@ router.get("/getallusers", GetUsers);
 //@route GET /api/v1/user
 //@access Public
 router.get("/getcurrentuser", validateToken, GetCurrentUser);
+
+//@desc Update User API
+//@route POST /api/v1/user/updateprofile/:id
+//@access Public
+router.post("/updateprofile/:id", [body("newProfile", "Profile picture not found").notEmpty()], UpdateProfile);
+
+//@desc Approve Users API
+//@route POST /api/v1/user/approve/:id
+//@access Public
+router.post("/approve/:id", GetUsers);
 
 module.exports = router;

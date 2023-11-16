@@ -61,8 +61,7 @@ export default {
             toast.error("User does not exist", {
               autoClose: 1500,
             });
-          }
-          if (err.response.status == 400) {
+          } else if (err.response.status == 400) {
             toast.error("User approvel is pending", {
               autoClose: 1500,
             });

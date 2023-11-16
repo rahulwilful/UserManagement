@@ -31,6 +31,7 @@ const CreateUser = async (req, res) => {
   const securedPass = await bcrypt.hash(data.password, salt);
 
   await User.create({
+    profile: "",
     name: data.name,
     email: data.email,
     mobile_no: data.mobile_no,
@@ -77,6 +78,7 @@ const LogInUser = async (req, res) => {
     }
 
     if (!oldUser.approved) {
+      logger.error(`${ip}: API /api/v1/user/login  responded User approval is pending for email:  ${email} `);
       return res.status(400).json({ error: "User approval is still pending" });
     }
 
@@ -171,7 +173,9 @@ const GetUserById = async (req, res) => {
   }
 
   try {
-    const user = await User.findById({ _id: userId });
+    const user = await User.findById({ _id: userId })
+      .populate({ path: "department", select: ["name", "value", "active"] })
+      .populate({ path: "role_type" });
     logger.info(`${ip}: API /api/v1/user/get/:id | responnded with "Got user by ID succesfully" `);
     return res.status(201).json(user);
   } catch {
@@ -216,6 +220,40 @@ const GetCurrentUser = async (req, res) => {
   }
 };
 
+//@desc Update User API
+//@route GET /api/v1/user/update
+//@access Public
+const UpdateProfile = async (req, res) => {
+  const errors = validationResult(req); //checking for validations
+  const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress; //wats remote address?
+
+  const id = req.params.id;
+  const data = matchedData(req);
+  console.log(data.newProfile);
+
+  if (!errors.isEmpty()) {
+    logger.error(`${ip}: API /api/v1/user/updateprofile responded with Error `);
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const user = await User.findOneAndUpdate(
+      {
+        _id: id,
+      },
+      {
+        profile: data.newProfile,
+      }
+    );
+    logger.info(`${ip}: API /api/v1/update | responded with "Profile updated successfully" `);
+
+    return res.status(201).json({ result: user });
+  } catch (e) {
+    logger.error(`${ip}: API /api/v1/user/update  responnded with Error "while updating profile" `);
+    return res.status(500).json(e, " Something went wrong while updating profile");
+  }
+};
+
 module.exports = {
   testUserAPI,
   CreateUser,
@@ -225,4 +263,5 @@ module.exports = {
   GetUserById,
   GetUsers,
   GetCurrentUser,
+  UpdateProfile,
 };

@@ -30,6 +30,14 @@ const routes = [
     component: Edit,
   },
   {
+    path: "/dashboard",
+    component: Dashboard,
+  },
+  {
+    path: "/admin",
+    component: Admin,
+  },
+  {
     path: "/:pathMatch(.*)*",
     component: NotFound,
   },

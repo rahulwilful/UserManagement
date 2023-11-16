@@ -5,6 +5,9 @@ const Role_type = require("./Role_type.js");
 const { Schema } = mongoose;
 
 const UserSchema = new Schema({
+  profile: {
+    type: String,
+  },
   name: {
     type: String,
     required: true,
@@ -36,13 +39,13 @@ const UserSchema = new Schema({
     type: String,
   },
   department: {
-    //type: "ObjectId",
-    type: String,
+    type: "ObjectId",
+    ref: "Department",
     required: true,
   },
   role_type: {
-    //type: "ObjectId",
-    type: String,
+    type: "ObjectId",
+    ref: "Role_type",
     required: true,
   },
   createDate: {

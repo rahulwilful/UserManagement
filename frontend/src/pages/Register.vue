@@ -45,7 +45,7 @@
                 <div class="mb-3">
                   <label for="facebook" class="form-label">Select Department*</label>
                   <select class="form-select" aria-label="Default select example" v-model="form.department">
-                    <option :value="item.name" v-for="item in departments" :key="item.name">
+                    <option :value="item._id" v-for="item in departments" :key="item.name">
                       {{ item.name }}
                     </option>
                   </select>
@@ -53,7 +53,7 @@
                 <div class="mb-3">
                   <label for="facebook" class="form-label">Select Role Type*</label>
                   <select class="form-select" aria-label="Default select example" v-model="form.role_type">
-                    <option :value="item.name" v-for="item in role_types" :key="item">
+                    <option :value="item._id" v-for="item in role_types" :key="item">
                       {{ item.name }}
                     </option>
                   </select>

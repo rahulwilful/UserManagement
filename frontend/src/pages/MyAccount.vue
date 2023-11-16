@@ -7,7 +7,8 @@
           <div class="card-header">Profile Picture</div>
           <div class="card-body text-center">
             <!-- Profile picture image-->
-            <img class="img-account-profile rounded-circle mb-2" src="https://source.unsplash.com/300x300/?icon,user" alt="" />
+            <img v-if="profile" class="img-account-profile rounded-circle mb-2" :src="profile" alt="Profile Picture" />
+            <img v-else class="img-account-profile rounded-circle mb-2" src="../assets/profile-circle.svg" alt="Default Profile Picture" />
 
             <!-- Profile picture help block-->
             <div class="small font-italic text-muted mb-4">
@@ -96,6 +97,7 @@ export default {
       department: "",
       role_type: "",
       joining_date: "",
+      profile: "",
     };
   },
   async created() {
@@ -109,7 +111,7 @@ export default {
       const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
         console.log(err);
         if (err.response.status == 401) {
-          //this.$router.push("/login");
+          this.$router.push("/login");
         }
       });
       //console.log(token);
@@ -118,7 +120,7 @@ export default {
       const userDetails = await axios.get(`http://localhost:3001/user/get/${this.id}`).catch((err) => {
         console.log(err);
       });
-      //console.log(userDetails);
+      console.log(userDetails);
       this.name = userDetails.data.name;
       this.mobile_no = userDetails.data.mobile_no;
       this.email = userDetails.data.email;
@@ -126,9 +128,10 @@ export default {
       this.instagram = userDetails.data.instagram;
       this.whatsapp_status = userDetails.data.whatsapp_status;
       this.whatsapp_no = userDetails.data.whatsapp_no;
-      this.department = userDetails.data.department;
-      this.role_type = userDetails.data.role_type;
+      this.department = userDetails.data.department.name;
+      this.role_type = userDetails.data.role_type.name;
       this.joining_date = userDetails.data.createDate;
+      this.profile = userDetails.data.profile;
     } catch (e) {
       console.log("error: ", e);
     }

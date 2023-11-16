@@ -7,14 +7,16 @@
           <div class="card-header">Profile Picture</div>
           <div class="card-body text-center">
             <!-- Profile picture image-->
-            <img class="img-account-profile rounded-circle mb-2" src="https://source.unsplash.com/300x300/?icon,user" alt="" />
+            <img v-if="form.profile" class="img-account-profile rounded-circle mb-2" :src="profile" alt="Profile Picture" />
+            <img v-else class="img-account-profile rounded-circle mb-2" src="../assets/profile-circle.svg" alt="Default Profile Picture" />
 
             <!-- Profile picture help block-->
             <div class="small font-italic text-muted mb-4">
               <h5>{{ form.name }}</h5>
             </div>
-            <!-- Profile picture upload button-->
+            <!-- Profile picture upload form -->
             <div>
+              <!-- Profile picture upload button-->
               <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Change Profile</button>
 
               <!-- Modal -->
@@ -26,14 +28,14 @@
                     </div>
                     <div class="modal-body">
                       <div class="mb-3">
-                        <label for="imageInput" class="form-label">Choose an image</label>
-                        <input class="form-control" type="file" id="imageInput" accept="image/*" @change="previewImage" />
-                        <img v-if="imageUrl" :src="imageUrl" class="mt-2" style="max-width: 100%; max-height: 200px" alt="Preview" />
+                        <label for="imageInput" class="form-label">Upload Image</label>
+                        <input class="form-control" type="file" id="imageInput" accept="image/*" @change="handleFileChange" />
+                        <img v-if="imageUrl" :src="imageUrl" class="mt-2" style="max-width: 100%; max-height: 200px" alt="Preview" :v-model="newProfile" />
                       </div>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                      <button type="button" class="btn btn-primary">Save changes</button>
+                      <button type="button" class="btn btn-primary" v-on:click="changeProfile">Save Image</button>
                     </div>
                   </div>
                 </div>
@@ -124,8 +126,12 @@ export default {
         whatsapp_no: "",
         department: "",
         role_type: "",
+        profile: "",
+        newProfile: "",
       },
       id: "",
+      selectedImage: null,
+      base64Image: null,
     };
   },
 
@@ -166,6 +172,58 @@ export default {
         console.log("Form Values Are ", this.form, this.error);
       }
     },
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    async handleFileChange(event) {
+      const file = event.target.files[0];
+
+      if (file) {
+        try {
+          const base64String = await this.convertToBase64(file);
+          // console.log(base64String);
+
+          // Set the base64 string to the form
+          this.form.newProfile = base64String;
+        } catch (error) {
+          console.error("Error converting to base64:", error);
+        }
+      }
+    },
+    convertToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          resolve(reader.result.split(",")[1]);
+        };
+
+        reader.onerror = (error) => {
+          reject(error);
+        };
+
+        reader.readAsDataURL(file);
+      });
+    },
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    async changeProfile() {
+      console.log(this.form.newProfile);
+      try {
+        const response = await axios.post(`http://localhost:3001/user/updateprofile/${this.id}`, this.form);
+        // Handle success, e.g., show a success message
+        console.log("User updated successfully", response.data);
+        toast.success("Profile updated successfully", {
+          autoClose: 1500,
+        });
+        this.$router.go(0);
+        // this.$router.push("/login");
+      } catch (error) {
+        // Handle errors, e.g., show an error message
+        console.error("Error updating profile", error);
+
+        toast.error("Something went wrong", {
+          autoClose: 1500,
+        });
+      }
+    },
   },
 
   async created() {
@@ -179,7 +237,7 @@ export default {
       const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
         console.log(err);
         if (err.response.status == 401) {
-          //this.$router.push("/login");
+          this.$router.push("/login");
         }
       });
       //console.log(token);
@@ -196,8 +254,9 @@ export default {
       this.form.instagram = userDetails.data.instagram;
       this.form.whatsapp_status = userDetails.data.whatsapp_status;
       this.form.whatsapp_no = userDetails.data.whatsapp_no;
-      this.form.department = userDetails.data.department;
-      this.form.role_type = userDetails.data.role_type;
+      this.form.department = userDetails.data.department.name;
+      this.form.role_type = userDetails.data.role_type.name;
+      this.form.profile = userDetails.data.profile;
       this.id = userDetails.data._id;
     } catch (e) {
       console.log("error: ", e);
