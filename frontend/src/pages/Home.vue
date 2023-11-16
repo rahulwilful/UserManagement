@@ -1,0 +1,37 @@
+<template>
+  <div class="container mt-5">
+    <h1 class="d-flex justify-content-center align-items-center">Wellcome To User Management System</h1>
+  </div>
+</template>
+<script>
+import axios from "axios";
+
+export default {
+  name: "Home",
+  methods: {
+    getUser(name) {
+      alert(name);
+    },
+  },
+  async created() {
+    const auth = {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    };
+
+    try {
+      await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
+        console.log(err);
+        if (err.response.status == 401) {
+          this.$router.push("/login");
+        }
+      });
+    } catch (e) {
+      console.log("error: ", e);
+    }
+  },
+
+  components: {},
+};
+</script>
