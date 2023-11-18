@@ -124,11 +124,17 @@ export default {
           toast.success("Registerd successfully", {
             autoClose: 1500,
           });
-          this.$router.push("/login");
+          setTimeout(() => {
+            this.$router.push("/login");
+          }, 1500);
         } catch (error) {
           // Handle errors, e.g., show an error message
           console.error("Error registering user", error);
-          if (error.response.status == 400) {
+          if (error.response.status == 404) {
+            toast.error("only admin can create admin", {
+              autoClose: 1500,
+            });
+          } else if (error.response.status == 400) {
             toast.error("check all the required feilds ", {
               autoClose: 1500,
             });

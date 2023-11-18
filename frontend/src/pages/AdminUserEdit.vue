@@ -80,9 +80,12 @@
 
                   <!-- /////////////////////////////////////////////////////////////////// -->
                   <div class="col-md-6">
-                    <div class="mt-1">
-                      <label class="small mb-1" for="whatsapp_no">Whatsapp Number</label>
-                      <input class="form-control" id="whatsapp_no" type="text" name="birthday" v-model="form.whatsapp_no" />
+                    <div class="form-check mb-3">
+                      <label class="form-check-label" for="flexCheckDefault">Whatsapp Number </label>
+                      <input class="form-check-input border border-dark" type="checkbox" v-on:click="form.whatsapp_status = !form.whatsapp_status" />
+                    </div>
+                    <div class="mb-3" v-if="form.whatsapp_status">
+                      <input type="number" class="form-control" id="whatsapp_no" v-model="form.whatsapp_no" placeholder="Enter Whatsapp Number" />
                     </div>
                     <div class="mt-2">
                       <label class="small mb-1" for="facebook">Facebook</label>
@@ -113,7 +116,13 @@ import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 
 export default {
-  name: "Edit",
+  name: "AdminUserEdit",
+  props: {
+    userId: {
+      type: String,
+      require: true,
+    },
+  },
   data() {
     return {
       form: {
@@ -137,39 +146,29 @@ export default {
 
   methods: {
     async handleSubmit() {
-      this.error = [];
-      for (const item in this.form) {
-        if (this.form[item] === "" || this.form[item].length === 0) {
-          if (!this.form[item] === "facebook" || !this.form[item] === "instagram" || !this.form[item] === "whatsapp_no" || !this.form[item] === "whatsapp_status") {
-            this.error.push(item);
-          }
-        }
-      }
-      if (this.error.length === 0) {
-        try {
-          const response = await axios.post(`http://localhost:3001/user/update/${this.id}`, this.form);
-          // Handle success, e.g., show a success message
-          console.log("User updated successfully", response.data);
-          toast.success("User updated successfully", {
+      try {
+        const response = await axios.post(`http://localhost:3001/user/update/${this.id}`, this.form);
+        // Handle success, e.g., show a success message
+        console.log("User updated successfully", response.data);
+        toast.success("User updated successfully", {
+          autoClose: 1500,
+        });
+        setTimeout(() => {
+          this.$router.go(0);
+        }, 1500);
+        // this.$router.push("/login");
+      } catch (error) {
+        // Handle errors, e.g., show an error message
+        console.error("Error updating user details", error);
+        if (error.response.status == 400) {
+          toast.error("check all the required feilds ", {
             autoClose: 1500,
           });
-          this.$router.go(0);
-          // this.$router.push("/login");
-        } catch (error) {
-          // Handle errors, e.g., show an error message
-          console.error("Error updating user details", error);
-          if (error.response.status == 400) {
-            toast.error("check all the required feilds ", {
-              autoClose: 1500,
-            });
-          } else {
-            toast.error("Something went wrong", {
-              autoClose: 1500,
-            });
-          }
+        } else {
+          toast.error("Something went wrong", {
+            autoClose: 1500,
+          });
         }
-      } else {
-        console.log("Form Values Are ", this.form, this.error);
       }
     },
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -225,8 +224,7 @@ export default {
       }
     },
   },
-
-  async created() {
+  async beforeCreate() {
     const auth = {
       headers: {
         Authorization: "Bearer " + localStorage.getItem("token"),
@@ -241,9 +239,37 @@ export default {
         }
       });
       //console.log(token);
-      this.id = token.data.data._id;
-      console.log("ID : ", this.id);
-      const userDetails = await axios.get(`http://localhost:3001/user/get/${this.id}`).catch((err) => {
+      const id = token.data.data._id;
+      // console.log("ID : ", id);
+      const userDetails = await axios.get(`http://localhost:3001/user/get/${id}`).catch((err) => {
+        console.log(err);
+      });
+      // console.log(userDetails.data.role_type.name);
+      if (userDetails.data.role_type.name !== "Admin") {
+        this.$router.push("/dashboard");
+      }
+    } catch (e) {
+      console.log("error: ", e);
+    }
+  },
+  async created() {
+    const auth = {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    };
+    // console.log(auth);
+    try {
+      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
+        console.log(err);
+        if (err.response.status == 401) {
+          this.$router.push("/login");
+        }
+      });
+      //console.log(this.userId);
+      //this.id = token.data.data._id;
+      console.log("ID : ", this.userId);
+      const userDetails = await axios.get(`http://localhost:3001/user/get/${this.userId}`).catch((err) => {
         console.log(err);
       });
       //console.log(userDetails);

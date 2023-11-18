@@ -7,6 +7,7 @@ import Edit from "../pages/Edit.vue";
 import NotFound from "../pages/NotFound.vue";
 import Dashboard from "../pages/Dashboard.vue";
 import Admin from "../pages/Admin.vue";
+import AdminUserEdit from "../pages/AdminUserEdit.vue";
 
 const routes = [
   {
@@ -36,6 +37,12 @@ const routes = [
   {
     path: "/admin",
     component: Admin,
+  },
+  {
+    path: "/adminuseredit/:userId",
+    name: "Admin",
+    component: AdminUserEdit,
+    props: true,
   },
   {
     path: "/:pathMatch(.*)*",

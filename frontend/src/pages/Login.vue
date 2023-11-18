@@ -75,10 +75,13 @@ export default {
         console.log("User loggedin successfully", response.data);
         console.log("User loggedin successfully", response.data.token);
         localStorage.setItem("token", response.data.token);
-        this.$router.push("/");
+
         toast.success("Log In Successfull", {
           autoClose: 1500,
         });
+        setTimeout(() => {
+          this.$router.push("/");
+        }, 1500);
       } else {
         console.log("Form Values Are ", this.form, this.error);
       }

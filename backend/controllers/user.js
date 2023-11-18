@@ -19,6 +19,10 @@ const CreateUser = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   const data = matchedData(req);
+  if (data.role_type === "6552fc218c59438ef6c17cd8") {
+    logger.error(`${ip}: API /api/v1/user/add  responnded with Error "Only admin can create admin" `);
+    return res.status(404).json({ mesasge: "Only admin can create admin" });
+  }
 
   const oldUser = await User.findOne({ email: data.email });
 
@@ -131,7 +135,6 @@ const UpdateUser = async (req, res) => {
       }
     );
     logger.info(`${ip}: API /api/v1/update | responnded with "User updated successfully" `);
-
     return res.status(201).json({ result: user });
   } catch (e) {
     logger.error(`${ip}: API /api/v1/user/update  responnded with Error "while updating user" `);
@@ -191,7 +194,7 @@ const GetUsers = async (req, res) => {
   const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
 
   try {
-    const allUsers = await User.find({ active: true });
+    const allUsers = await User.find({ approved: true }).populate({ path: "department" }).populate({ path: "role_type" });
     logger.info(`${ip}: API /api/v1/user/getallusers | responnded with "Fetchd all the users" `);
     return res.status(200).json(allUsers);
   } catch (e) {
@@ -220,8 +223,8 @@ const GetCurrentUser = async (req, res) => {
   }
 };
 
-//@desc Update User API
-//@route GET /api/v1/user/update
+//@desc Update Profile API
+//@route GET /api/v1/user/updateprofile/:id
 //@access Public
 const UpdateProfile = async (req, res) => {
   const errors = validationResult(req); //checking for validations
@@ -254,6 +257,56 @@ const UpdateProfile = async (req, res) => {
   }
 };
 
+//@desc Approve User API
+//@route GET /api/v1/user/approveuser/:id
+//@access Public
+const ApproveUser = async (req, res) => {
+  const errors = validationResult(req); //checking for validations
+  const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress; //wats remote address?
+
+  const id = req.params.id;
+  const data = matchedData(req);
+  console.log(data.newProfile);
+
+  if (!errors.isEmpty()) {
+    logger.error(`${ip}: API /api/v1/user/updateprofile responded with Error `);
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const user = await User.findOneAndUpdate(
+      {
+        _id: id,
+      },
+      {
+        approved: true,
+      }
+    );
+    logger.info(`${ip}: API /api/v1/user/approveuser/:id | responded with "New user approved" `);
+
+    return res.status(201).json({ result: user });
+  } catch (e) {
+    logger.error(`${ip}: API /api/v1/user/approveuser/:id  responnded with Error "while approving new user" `);
+    return res.status(500).json(e, " Something went wrong while updating profile");
+  }
+};
+
+//@desc Get New Users API
+//@route GET /api/v1/user/getnewusers
+//@access Public
+const GetNewUsers = async (req, res) => {
+  const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+
+  try {
+    const allUsers = await User.find({ approved: false }).populate({ path: "department" }).populate({ path: "role_type" });
+    logger.info(`${ip}: API /api/v1/user/getallusers | responnded with "Fetchd all the users" `);
+    return res.status(200).json(allUsers);
+  } catch (e) {
+    logger.error(`${ip}: API /api/v1/user/getallusers  responnded with Error  " somethung went wrong" `);
+    return res.status(500).json({ e: "Something went wrong" });
+  }
+};
+
 module.exports = {
   testUserAPI,
   CreateUser,
@@ -264,4 +317,6 @@ module.exports = {
   GetUsers,
   GetCurrentUser,
   UpdateProfile,
+  ApproveUser,
+  GetNewUsers,
 };

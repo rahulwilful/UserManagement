@@ -14,10 +14,58 @@
             <li class="nav-item">
               <router-link class="nav-link active" aria-current="page" to="/dashboard">Dashboard</router-link>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" v-if="form.role_type == 'Admin'">
               <router-link class="nav-link active" aria-current="page" to="/admin">Admin</router-link>
             </li>
+            <li class="nav-item" v-if="form.role_type == 'Admin'">
+              <button v-if="newUserCount !== 0" type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <img class="bi bi-bell-fill bi-primary" src="../assets/bell-fill.svg" alt="Default Profile Picture" />
+                {{ newUserCount }}
+              </button>
+            </li>
           </ul>
+
+          <!-- Modal -->
+
+          <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <!-- Modal Body -->
+                  <div class="container bootdey">
+                    <div class="row">
+                      <div class="col">
+                        <div class="user-widget-2">
+                          <ul class="list-group">
+                            <li v-for="item in newUsers" :key="item._id" class="list-group-item d-flex justify-content-between align-items-center" :class="{ 'fade-out': item.approved }">
+                              <div v-if="!item.approved">
+                                <h5 class="mb-1"><strong>Name:</strong> {{ item.name }}</h5>
+                                <p class="mb-1"><strong>Department:</strong> {{ item.department.name }}</p>
+                                <p class="mb-1"><strong>Role:</strong> {{ item.role_type.name }}</p>
+                              </div>
+                              <div>
+                                <button type="button" class="btn btn-primary" @click="approveUser(item._id)" :disabled="item.approved">
+                                  {{ item.approved ? "Approved" : "Approve" }}
+                                </button>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="float-right">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item dropdown">
@@ -62,15 +110,33 @@ export default {
     return {
       form: {
         name: "",
-        mobile_no: "",
-        email: "",
+        role_type: "",
       },
       id: "",
-      disabledEmail: true,
+      newUsers: [],
+      newUserCount: 0,
     };
   },
   components: {},
   methods: {
+    async approveUser(id) {
+      try {
+        const userDetails = await axios.post(`http://localhost:3001/user/approveuser/${id}`).catch((err) => {
+          console.log(err);
+        });
+        console.log(userDetails);
+        this.newUsers = this.newUsers.filter((user) => user._id !== id);
+        this.newUserCount--;
+        toast.success("approved " + userDetails.data.result.name, {
+          autoClose: 1500,
+        });
+      } catch {
+        toast.error("Something went wrong", {
+          autoClose: 1500,
+        });
+        console.log("error: ", e);
+      }
+    },
     logout() {
       const token = localStorage.getItem("token");
       console.log("token: ", token);
@@ -84,8 +150,9 @@ export default {
         toast.info("Log Out Sucessfull", {
           autoClose: 1500,
         });
-        setTimeout(1500);
-        this.$router.go(0);
+        setTimeout(() => {
+          this.$router.go(0);
+        }, 1500);
       }
     },
   },
@@ -112,8 +179,15 @@ export default {
         console.log(err);
       });
       this.form.name = userDetails.data.name;
-      this.form.mobile_no = userDetails.data.mobile_no;
-      this.form.email = userDetails.data.email;
+      this.form.role_type = userDetails.data.role_type.name;
+
+      const newUsers = await axios.get(`http://localhost:3001/user/getnewusers/`).catch((err) => {
+        console.log(err);
+      });
+      this.newUsers = newUsers.data;
+      this.newUserCount = Object.keys(this.newUsers).length;
+      //console.log("number of new user: ", this.newUserCount);
+      console.log(this.newUsers);
     } catch (e) {
       console.log("error: ", e);
     }
