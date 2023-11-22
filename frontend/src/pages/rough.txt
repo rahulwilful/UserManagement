@@ -1,0 +1,20 @@
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">Upload Image</h1>
+                    </div>
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label for="imageInput" class="form-label">Upload Image</label>
+                        <input class="form-control" type="file" id="imageInput" accept="image/*" @change="handleFileChange" />
+                        <img v-if="imageUrl" :src="imageUrl" class="mt-2" style="max-width: 100%; max-height: 200px" alt="Preview" :v-model="newProfile" />
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-primary" v-on:click="changeProfile">Save Image</button>
+                    </div>
+                  </div>
+                </div>
+              </div>

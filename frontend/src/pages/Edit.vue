@@ -17,20 +17,22 @@
             <!-- Profile picture upload form -->
             <div>
               <!-- Profile picture upload button-->
-              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Change Profile</button>
+              <!-- Button trigger modal -->
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Change Profile</button>
 
               <!-- Modal -->
-              <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h1 class="modal-title fs-5" id="exampleModalLabel">Upload Image</h1>
+                      <h1 class="modal-title fs-5" id="staticBackdropLabel">Upload Image</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                       <div class="mb-3">
                         <label for="imageInput" class="form-label">Upload Image</label>
                         <input class="form-control" type="file" id="imageInput" accept="image/*" @change="handleFileChange" />
-                        <img v-if="imageUrl" :src="imageUrl" class="mt-2" style="max-width: 100%; max-height: 200px" alt="Preview" :v-model="newProfile" />
+                        <img v-if="imageUrl" :src="imageUrl" class="mt-2" style="max-width: 100%; max-height: 200px" alt="Preview" :v-model="form.newProfile" />
                       </div>
                     </div>
                     <div class="modal-footer">
@@ -78,7 +80,7 @@
                     </div>
                   </div>
 
-                  <!-- /////////////////////////////////////////////////////////////////// -->
+                  <!-- //////////////////////////// Next Column/////////////////////////////////////// -->
                   <div class="col-md-6">
                     <div class="mt-1">
                       <label class="small mb-1" for="whatsapp_no">Whatsapp Number</label>
@@ -174,19 +176,8 @@ export default {
     },
     ////////////////////////////////////////////////////////////////////////////////////////////////
     async handleFileChange(event) {
-      const file = event.target.files[0];
-
-      if (file) {
-        try {
-          const base64String = await this.convertToBase64(file);
-          // console.log(base64String);
-
-          // Set the base64 string to the form
-          this.form.newProfile = base64String;
-        } catch (error) {
-          console.error("Error converting to base64:", error);
-        }
-      }
+      this.form.newProfile = event.target.files[0];
+      //console.log(this.form.newProfile);
     },
     convertToBase64(file) {
       return new Promise((resolve, reject) => {
@@ -207,13 +198,15 @@ export default {
     async changeProfile() {
       console.log(this.form.newProfile);
       try {
-        const response = await axios.post(`http://localhost:3001/user/updateprofile/${this.id}`, this.form);
+        const result = await axios.post(`https://api.cloudinary.com/v1_1/drp5eeosr/image/upload/file=${this.form.newProfile}&upload_preset=images_preset`);
+        console.log(result);
+        /*  const response = await axios.post(`http://localhost:3001/user/updateprofile/${this.id}`, this.form);
         // Handle success, e.g., show a success message
         console.log("User updated successfully", response.data);
         toast.success("Profile updated successfully", {
           autoClose: 1500,
         });
-        this.$router.go(0);
+        this.$router.go(0); */
         // this.$router.push("/login");
       } catch (error) {
         // Handle errors, e.g., show an error message

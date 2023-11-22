@@ -26,8 +26,8 @@
             <div>
               <!-- Form Group (username)-->
               <div class="mb-3">
-                <label class="small mb-1" for="inputUsername">Name</label>
-                <input :disabled="true" class="form-control" id="inputUsername" type="text" v-model="name" />
+                <label class="small mb-1" for="name">Name</label>
+                <input :disabled="true" class="form-control" id="name" type="text" v-model="name" />
               </div>
               <!-- Form Row        -->
               <div class="row gx-3 mb3">
@@ -69,7 +69,7 @@
 
                   <div class="mt-2" v-if="instagram">
                     <label class="small mb-1" for="instagram">Instagram</label>
-                    <input :disabled="true" class="form-control" id="instagram" type="text" name="birthday" v-model="instagram" />
+                    <input :disabled="true" class="form-control" id="instagram" type="text" name="instagram" v-model="instagram" />
                   </div>
                 </div>
               </div>

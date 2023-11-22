@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const secret = "test";
 const logger = require("../config/logger.js");
 const jwt = require("jsonwebtoken");
+const cloudinary = require("../config/imageDB.js").v2;
 
 const testUserAPI = async (req, res) => {
   return res.status(200).send("User API test successfull");
@@ -21,7 +22,7 @@ const CreateUser = async (req, res) => {
   const data = matchedData(req);
   if (data.role_type === "6552fc218c59438ef6c17cd8") {
     logger.error(`${ip}: API /api/v1/user/add  responnded with Error "Only admin can create admin" `);
-    return res.status(404).json({ mesasge: "Only admin can create admin" });
+    return res.status(403).json({ mesasge: "Only admin can create admin" });
   }
 
   const oldUser = await User.findOne({ email: data.email });
@@ -227,33 +228,36 @@ const GetCurrentUser = async (req, res) => {
 //@route GET /api/v1/user/updateprofile/:id
 //@access Public
 const UpdateProfile = async (req, res) => {
-  const errors = validationResult(req); //checking for validations
-  const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress; //wats remote address?
+  const errors = validationResult(req); // checking for validations
+  const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress; // what's remote address?
 
   const id = req.params.id;
   const data = matchedData(req);
-  console.log(data.newProfile);
 
   if (!errors.isEmpty()) {
-    logger.error(`${ip}: API /api/v1/user/updateprofile responded with Error `);
+    logger.error(`${ip}: API /api/v1/user/updateprofile responded with Error`);
     return res.status(400).json({ errors: errors.array() });
   }
-
+  // console.log(data.newProfile);
   try {
+    const result = await cloudinary.uploader.upload(data.newProfile, {
+      folder: "profiles",
+    });
+    console.log(result.secure_url);
     const user = await User.findOneAndUpdate(
       {
         _id: id,
       },
       {
-        profile: data.newProfile,
+        profile: result.secure_url,
       }
     );
-    logger.info(`${ip}: API /api/v1/update | responded with "Profile updated successfully" `);
+    logger.info(`${ip}: API /api/v1/update | responded with "Profile updated successfully"`);
 
     return res.status(201).json({ result: user });
   } catch (e) {
-    logger.error(`${ip}: API /api/v1/user/update  responnded with Error "while updating profile" `);
-    return res.status(500).json(e, " Something went wrong while updating profile");
+    logger.error(`${ip}: API /api/v1/user/update  responded with Error "while updating profile"`);
+    return res.status(500).json({ error: "Something went wrong while updating profile" });
   }
 };
 
@@ -307,6 +311,65 @@ const GetNewUsers = async (req, res) => {
   }
 };
 
+//@desc Create Admin API
+//@route POST /api/v1/user/createadmin
+//@access Public
+const CreateAdmin = async (req, res) => {
+  const errors = validationResult(req); //checking for validations
+  const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress; //wats remote address?
+
+  //if error return
+  if (!errors.isEmpty()) {
+    logger.error(`${ip}: API /api/v1/user/add  responnded with Error `);
+    return res.status(400).json({ errors: errors.array() });
+  }
+  const data = matchedData(req);
+
+  const checkAdmin = await User.findById({ _id: req.params.id }).populate({ path: "role_type" });
+  if (!checkAdmin) {
+    logger.error(`${ip}: API /api/v1/user/add  responnded with Error "Invalid admin ID" `);
+    return res.status(404).json({ mesasge: "Invalid admin ID" });
+  }
+  if (checkAdmin.role_type.value !== "admin") {
+    logger.error(`${ip}: API /api/v1/user/add  responnded with Error "Only admin can create admin" `);
+    return res.status(403).json({ mesasge: "Only admin can create admin" });
+  }
+  console.log(checkAdmin);
+
+  const oldUser = await User.findOne({ email: data.email });
+
+  if (oldUser) {
+    logger.error(`${ip}: API /api/v1/user/add  responnded with User already registered! for email: ${data.email} `);
+    return res.status(400).json({ message: "User already registered!" });
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const securedPass = await bcrypt.hash(data.password, salt);
+
+  await User.create({
+    profile: "",
+    name: data.name,
+    email: data.email,
+    mobile_no: data.mobile_no,
+    password: securedPass,
+    department: data.department,
+    role_type: data.role_type,
+    whatsapp_status: data.whatsapp_status,
+    whatsapp_no: data.whatsapp_no,
+    instagram: data.instagram,
+    facebook: data.facebook,
+    approved: true,
+  })
+    .then((user) => {
+      logger.info(`${ip}: API /api/v1/user/add  responnded with Success `);
+      return res.status(201).json({ result: user });
+    })
+    .catch((err) => {
+      logger.error(`${ip}: API /api/v1/user/add  responnded with Error `);
+      return res.status(500).json({ message: err.message });
+    });
+};
+
 module.exports = {
   testUserAPI,
   CreateUser,
@@ -319,4 +382,5 @@ module.exports = {
   UpdateProfile,
   ApproveUser,
   GetNewUsers,
+  CreateAdmin,
 };

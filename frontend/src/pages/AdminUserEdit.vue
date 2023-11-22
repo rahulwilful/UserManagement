@@ -16,10 +16,8 @@
             </div>
             <!-- Profile picture upload form -->
             <div>
-              <!-- Profile picture upload button-->
               <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Change Profile</button>
 
-              <!-- Modal -->
               <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                   <div class="modal-content">

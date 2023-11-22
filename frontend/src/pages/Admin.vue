@@ -1,19 +1,34 @@
 <template>
   <div class="container mt-5">
-    <h1 class="text-center mb-4">Admin</h1>
+    <h1 class="text-center mb-4">Manage Users</h1>
+    <div class="mb-3">
+      <router-link to="/createadmin">
+        <button type="button" class="btn btn-primary btn-lg shadow-lg">
+          <i class="bi bi-person-plus-fill"></i>
+        </button>
+      </router-link>
+    </div>
     <div class="container">
-      <div class="row">
-        <div class="col-md-4" v-for="item in allUsers" :key="item._id">
-          <div class="card mb-4 shadow">
-            <div class="card-body">
-              <h5 class="card-title"><strong>Name:</strong> {{ item.name }}</h5>
-              <p class="card-text"><strong>Department:</strong> {{ item.department.name }}</p>
-              <p class="card-text"><strong>Role:</strong> {{ item.role_type.name }}</p>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Department</th>
+            <th>Role</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in allUsers" :key="item._id">
+            <td>{{ item.name }}</td>
+            <td>{{ item.department.name }}</td>
+            <td>{{ item.role_type.name }}</td>
+            <td>
               <router-link class="btn btn-primary" :to="'/adminuseredit/' + item._id" role="button">Edit</router-link>
-            </div>
-          </div>
-        </div>
-      </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>

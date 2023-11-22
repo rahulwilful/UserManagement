@@ -2,7 +2,9 @@
   <div>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
       <div class="container-fluid">
-        <router-link class="navbar-brand" to="/">NavBar</router-link>
+        <router-link class="navbar-brand" to="/">
+          <img src="../assets/logoipsum-280.svg" />
+        </router-link>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -11,11 +13,11 @@
             <li class="nav-item">
               <router-link class="nav-link active" aria-current="page" to="/">Home</router-link>
             </li>
-            <li class="nav-item">
+            <li v-if="form.role_type" class="nav-item">
               <router-link class="nav-link active" aria-current="page" to="/dashboard">Dashboard</router-link>
             </li>
             <li class="nav-item" v-if="form.role_type == 'Admin'">
-              <router-link class="nav-link active" aria-current="page" to="/admin">Admin</router-link>
+              <router-link class="nav-link active" aria-current="page" to="/admin">Manage Users</router-link>
             </li>
             <li class="nav-item" v-if="form.role_type == 'Admin'">
               <button v-if="newUserCount !== 0" type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -66,10 +68,12 @@
             </div>
           </div>
 
-          <div class="float-right">
+          <div v-if="form.role_type" class="float-right mx-5">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"> Dropdown </a>
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <img src="../assets/profile-circle copy.svg" />
+                </a>
                 <ul class="dropdown-menu">
                   <li class="nav-item">
                     <router-link class="nav-link active" aria-current="page" to="/myaccount">My Account</router-link>

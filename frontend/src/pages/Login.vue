@@ -6,20 +6,21 @@
           <h1 class="text-center mt-2">LogIn</h1>
           <form class="my-3">
             <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">Email address</label>
-              <input type="email" class="form-control" id="exampleInputEmail1" v-model="form.email" aria-describedby="emailHelp" />
+              <label for="form.email" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="form.email" v-model="form.email" aria-describedby="emailHelp" />
             </div>
             <div class="mb-3">
-              <label for="exampleInputPassword1" class="form-label">Password</label>
-              <input type="password" class="form-control" id="exampleInputPassword1" v-model="form.password" />
+              <label for="form.password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="form.password" v-model="form.password" />
             </div>
             <div class="d-grid gap-2">
               <button v-on:click="handleSubmit" class="btn btn-dark" type="button">Login</button>
+              <router-link to="/enteremail"><p>forgot password?</p></router-link>
             </div>
 
             <p class="text-center mt-3">Have an account ? then</p>
             <div class="text-center">
-              <button class="btn btn-dark me-md-3 mr-1" v-on:click="redirect">Register</button>
+              <button class="btn btn-dark me-md-3 mr-1" v-on:click="redirectRegister">Register</button>
             </div>
             <br />
           </form>
@@ -80,13 +81,13 @@ export default {
           autoClose: 1500,
         });
         setTimeout(() => {
-          this.$router.push("/");
+          this.$router.push("/dashboard");
         }, 1500);
       } else {
         console.log("Form Values Are ", this.form, this.error);
       }
     },
-    redirect() {
+    redirectRegister() {
       this.$router.push("/register");
     },
   },

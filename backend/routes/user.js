@@ -2,12 +2,34 @@ const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
 const validateToken = require("../middleWare/validateToken.js");
-const { testUserAPI, CreateUser, LogInUser, UpdateUser, DeleteUser, GetNewUsers, GetUserById, GetUsers, GetCurrentUser, ApproveUser, UpdateProfile } = require("../controllers/user");
+const { testUserAPI, CreateUser, CreateAdmin, LogInUser, UpdateUser, DeleteUser, GetNewUsers, GetUserById, GetUsers, GetCurrentUser, ApproveUser, UpdateProfile } = require("../controllers/user");
 
 //@desc Test User API
 //@route GET /api/v1/user
 //@access Public
 router.get("/", testUserAPI);
+
+//@desc Create Admin API
+//@route POST /api/v1/user/createadmin
+//@access Public
+router.post(
+  "/createadmin/:id",
+  [
+    body("name", "Enter a valid name").isLength({ min: 3 }),
+    body("email", "Enter a Valid Email").isEmail(),
+    body("mobile_no", "Enter a Valid Whatsapp Number").notEmpty().isNumeric(),
+    body("password", "Password must have atlest 5 character").isLength({
+      min: 5,
+    }),
+    body("department"),
+    body("role_type"),
+    body("whatsapp_status"),
+    body("whatsapp_no"),
+    body("instagram"),
+    body("facebook"),
+  ],
+  CreateAdmin
+);
 
 //@desc Create User API
 //@route POST /api/v1/user/add
