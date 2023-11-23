@@ -2,12 +2,17 @@ const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
 const validateToken = require("../middleWare/validateToken.js");
-const { testUserAPI, CreateUser, CreateAdmin, LogInUser, UpdateUser, DeleteUser, GetNewUsers, GetUserById, GetUsers, GetCurrentUser, ApproveUser, UpdateProfile } = require("../controllers/user");
+const { testUserAPI, CreateUser, CreateAdmin, LogInUser, GoogleLogIn, UpdateUser, DeleteUser, GetNewUsers, GetUserById, GetUsers, GetCurrentUser, ApproveUser, UpdateProfile } = require("../controllers/user");
 
 //@desc Test User API
 //@route GET /api/v1/user
 //@access Public
 router.get("/", testUserAPI);
+
+//@desc LogIn User API
+//@route GET /api/v1/user/login
+//@access Public
+router.post("/googlelogin", [body("email", "Enter Valid Email").isEmail()], GoogleLogIn);
 
 //@desc Create Admin API
 //@route POST /api/v1/user/createadmin

@@ -18,6 +18,12 @@
               <router-link to="/enteremail"><p>forgot password?</p></router-link>
             </div>
 
+            <div class="my-2 text-center">OR</div>
+
+            <div class="container d-flex justify-content-center align-items-center mt-3">
+              <GoogleLogin :callback="handleGoogleLogin" />
+            </div>
+
             <p class="text-center mt-3">Have an account ? then</p>
             <div class="text-center">
               <button class="btn btn-dark me-md-3 mr-1" v-on:click="redirectRegister">Register</button>
@@ -31,6 +37,7 @@
 </template>
 
 <script>
+import { decodeCredential } from "vue3-google-login";
 import axios from "axios";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
@@ -47,6 +54,41 @@ export default {
     };
   },
   methods: {
+    async handleGoogleLogin(response) {
+      console.log("logged in");
+      const user = decodeCredential(response.credential);
+      console.log(user.email);
+      this.form.email = user.email;
+
+      const googleResponse = await axios.post("http://localhost:3001/user/googlelogin", this.form).catch((err) => {
+        console.log(err);
+        if (err.response.status == 404) {
+          toast.error("User does not exist", {
+            autoClose: 1500,
+          });
+        } else if (err.response.status == 400) {
+          toast.error("User approvel is pending", {
+            autoClose: 1500,
+          });
+        } else {
+          console.error("Error , cannot loggin", err);
+          toast.error("Somthing Went wrong", {
+            autoClose: 1500,
+          });
+        }
+      });
+      console.log("User loggedin successfully", googleResponse.data);
+      console.log("User loggedin successfully", googleResponse.data.token);
+      localStorage.setItem("token", googleResponse.data.token);
+
+      toast.success("Log In Successfull", {
+        autoClose: 1500,
+      });
+      setTimeout(() => {
+        this.$router.push("/dashboard");
+      }, 1500);
+    },
+
     async handleSubmit(e) {
       e.preventDefault();
       this.error = [];

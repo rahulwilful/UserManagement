@@ -370,6 +370,42 @@ const CreateAdmin = async (req, res) => {
     });
 };
 
+const GoogleLogIn = async (req, res) => {
+  const errors = validationResult(req); //checking for validations
+  const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress; //wats remote address?
+
+  //if error return
+  if (!errors.isEmpty()) {
+    logger.error(`${ip}: API /api/v1/user/login  responnded with Error `);
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const email = req.body.email;
+  console.log(email);
+
+  try {
+    const oldUser = await User.findOne({ email });
+    if (!oldUser) {
+      logger.error(`${ip}: API /api/v1/user/login  responded User does not 
+      exist with email:  ${email} `);
+      return res.status(404).json({ error: "User Does Not Exist" });
+    }
+
+    if (!oldUser.approved) {
+      logger.error(`${ip}: API /api/v1/user/login  responded User approval is pending for email:  ${email} `);
+      return res.status(400).json({ error: "User approval is still pending" });
+    }
+
+    const token = jwt.sign({ user: oldUser }, secret, { expiresIn: "48h" });
+
+    logger.info(`${ip}: API /api/v1/login | Login Successfull" `);
+    return res.status(200).json({ result: oldUser, token });
+  } catch (e) {
+    logger.error(`${ip}: API /api/v1/user/login  responnded with Error `);
+    return res.status(500).json(e, " Something went wrong");
+  }
+};
+
 module.exports = {
   testUserAPI,
   CreateUser,
@@ -383,4 +419,5 @@ module.exports = {
   ApproveUser,
   GetNewUsers,
   CreateAdmin,
+  GoogleLogIn,
 };
