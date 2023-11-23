@@ -15,13 +15,15 @@
             </div>
             <div class="d-grid gap-2">
               <button v-on:click="handleSubmit" class="btn btn-dark" type="button">Login</button>
-              <router-link to="/enteremail"><p>forgot password?</p></router-link>
+              <router-link to="/forgotpassword"><p>forgot password?</p></router-link>
             </div>
 
             <div class="my-2 text-center">OR</div>
 
-            <div class="container d-flex justify-content-center align-items-center mt-3">
-              <GoogleLogin :callback="handleGoogleLogin" />
+            <div class="d-grid gap-2 mt-3">
+              <button class="btn btn-outline-primary" type="button">
+                <GoogleLogin :callback="handleGoogleLogin" />
+              </button>
             </div>
 
             <p class="text-center mt-3">Have an account ? then</p>

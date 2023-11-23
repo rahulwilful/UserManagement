@@ -1,11 +1,12 @@
 <script setup>
 import Header from "./components/Header.vue";
+import ResetPassword from "./pages/ResetPassword.vue";
 </script>
 
 <template>
   <div class="">
-    <!-- <GoogleLogin :callback="handleGoogleLogin"  /> -->
     <Header />
+
     <router-view />
   </div>
 </template>

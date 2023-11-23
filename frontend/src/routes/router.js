@@ -11,12 +11,96 @@ import AdminUserEdit from "../pages/AdminUserEdit.vue";
 import CreateAdmin from "../pages/CreateAdmin.vue";
 import MoreDetails from "../pages/MoreDetails.vue";
 import GoogleSignIn from "../pages/GoogleSignIn.vue";
-import EnterEmail from "../pages/EnterEmail.vue";
+import ForgotPassword from "../pages/ForgotPassword.vue";
+import ResetPassword from "../pages/ResetPassword.vue";
 import Default from "../views/Default.vue";
 import DashboardView from "../views/DashboardView.vue";
 
 const routes = [
-  /*  {
+  {
+    path: "/",
+    component: Home,
+  },
+  {
+    path: "/login",
+    component: Login,
+  },
+  {
+    path: "/forgotpassword",
+    component: ForgotPassword,
+  },
+  {
+    path: "/resetpassword/:email/:paramsotp",
+    name: "EnterEmail",
+    component: ResetPassword,
+    props: true,
+  },
+  {
+    path: "/register",
+    component: Register,
+  },
+  {
+    path: "/login",
+    component: Login, // Use 'component' instead of 'components'
+  },
+  {
+    path: "/register",
+    component: Register,
+  },
+  {
+    path: "/",
+    component: Home,
+  },
+  {
+    path: "/myaccount",
+    component: MyAccount,
+  },
+  {
+    path: "/edit",
+    component: Edit,
+  },
+  {
+    path: "/dashboard",
+    component: Dashboard,
+  },
+  {
+    path: "/admin",
+    component: Admin,
+  },
+  {
+    path: "/createadmin",
+    component: CreateAdmin,
+  },
+  {
+    path: "/googlesignin",
+    component: GoogleSignIn,
+  },
+  {
+    path: "/adminuseredit/:userId",
+    name: "Admin",
+    component: AdminUserEdit,
+    props: true,
+  },
+  {
+    path: "/moredetails/:userId",
+    name: "dashboard",
+    component: MoreDetails,
+    props: true,
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    component: NotFound,
+  },
+];
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+});
+
+export default router;
+
+/*  {
     path: "/",
     component: Default,
     children: [
@@ -81,81 +165,3 @@ const routes = [
       },
     ],
   }, */
-
-  {
-    path: "/",
-    component: Home,
-  },
-  {
-    path: "/login",
-    component: Login,
-  },
-  {
-    path: "/enteremail",
-    component: EnterEmail,
-  },
-  {
-    path: "/register",
-    component: Register,
-  },
-
-  {
-    path: "/login",
-    component: Login, // Use 'component' instead of 'components'
-  },
-  {
-    path: "/register",
-    component: Register,
-  },
-  {
-    path: "/",
-    component: Home,
-  },
-  {
-    path: "/myaccount",
-    component: MyAccount,
-  },
-  {
-    path: "/edit",
-    component: Edit,
-  },
-  {
-    path: "/dashboard",
-    component: Dashboard,
-  },
-  {
-    path: "/admin",
-    component: Admin,
-  },
-  {
-    path: "/createadmin",
-    component: CreateAdmin,
-  },
-  {
-    path: "/googlesignin",
-    component: GoogleSignIn,
-  },
-  {
-    path: "/adminuseredit/:userId",
-    name: "Admin",
-    component: AdminUserEdit,
-    props: true,
-  },
-  {
-    path: "/moredetails/:userId",
-    name: "dashboard",
-    component: MoreDetails,
-    props: true,
-  },
-  {
-    path: "/:pathMatch(.*)*",
-    component: NotFound,
-  },
-];
-
-const router = createRouter({
-  history: createWebHistory(),
-  routes,
-});
-
-export default router;
