@@ -2,15 +2,33 @@ const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
 const validateToken = require("../middleWare/validateToken.js");
-const { testUserAPI, CreateUser, CreateAdmin, LogInUser, GoogleLogIn, UpdateUser, DeleteUser, GetNewUsers, GetUserById, GetUsers, GetCurrentUser, ApproveUser, UpdateProfile } = require("../controllers/user");
+const { testUserAPI, CreateUser, CreateAdmin, ResetPasword, VarifyEmail, LogInUser, GoogleLogIn, UpdateUser, DeleteUser, GetNewUsers, GetUserById, GetUsers, GetCurrentUser, ApproveUser, UpdateProfile } = require("../controllers/user");
 
 //@desc Test User API
 //@route GET /api/v1/user
 //@access Public
 router.get("/", testUserAPI);
 
-//@desc LogIn User API
-//@route GET /api/v1/user/login
+//@desc Reset Password API
+//@route GET /api/v1/resetpassword
+//@access Public
+router.post(
+  "/resetpassword",
+  [
+    body("email", "Enter Valid Email").isEmail(),
+    body("password", "Enter New Password").isLength({
+      min: 5,
+    }),
+  ],
+  ResetPasword
+);
+//@desc Varify Email  API
+//@route GET /api/v1/user/varifyemail
+//@access Public
+router.post("/varifyemail", [body("email", "Enter Valid Email").isEmail()], VarifyEmail);
+
+//@desc Google LogIn API
+//@route GET /api/v1/user/googlelogin
 //@access Public
 router.post("/googlelogin", [body("email", "Enter Valid Email").isEmail()], GoogleLogIn);
 

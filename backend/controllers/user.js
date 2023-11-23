@@ -370,6 +370,9 @@ const CreateAdmin = async (req, res) => {
     });
 };
 
+//@desc Google LogIn API
+//@route POST /api/v1/user/googlelogin
+//@access Public
 const GoogleLogIn = async (req, res) => {
   const errors = validationResult(req); //checking for validations
   const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress; //wats remote address?
@@ -406,6 +409,71 @@ const GoogleLogIn = async (req, res) => {
   }
 };
 
+//@desc Varify Email API
+//@route POST /api/v1/user/varifyemail
+//@access Public
+const VarifyEmail = async (req, res) => {
+  const errors = validationResult(req); //checking for validations
+  const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress; //wats remote address?
+
+  //if error return
+  if (!errors.isEmpty()) {
+    logger.error(`${ip}: API /api/v1/user/login  responnded with Error `);
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const email = req.body.email;
+  console.log(email);
+
+  try {
+    const oldUser = await User.findOne({ email });
+    if (!oldUser) {
+      logger.error(`${ip}: API /api/v1/user/login  responded ' Email does not 
+      exist :  ${email}' `);
+      return res.status(404).json({ error: "User Does Not Exist" });
+    }
+
+    logger.info(`${ip}: API /api/v1/login | Login Successfull" `);
+    return res.status(200).json({ result: oldUser.email });
+  } catch (e) {
+    logger.error(`${ip}: API /api/v1/user/login  responnded with Error `);
+    return res.status(500).json(e, " Something went wrong");
+  }
+};
+
+//@desc Reset Password API
+//@route GET /api/v1/user/resetpassword
+//@access Public
+const ResetPasword = async (req, res) => {
+  const errors = validationResult(req); //checking for validations
+  const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress; //wats remote address?
+
+  const data = matchedData(req);
+  //console.log(data.email);
+  if (!errors.isEmpty()) {
+    logger.error(`${ip}: API /api/v1/user/login  responnded with Error `);
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const securedPass = await bcrypt.hash(data.password, salt);
+    const user = await User.findOneAndUpdate(
+      {
+        email: data.email,
+      },
+      {
+        password: securedPass,
+      }
+    );
+    logger.info(`${ip}: API /api/v1/update | responnded with "User updated successfully" `);
+    return res.status(201).json({ result: user });
+  } catch (e) {
+    logger.error(`${ip}: API /api/v1/user/update  responnded with Error "while updating user" `);
+    return res.status(500).json(e, " Something went wrong while updating data");
+  }
+};
+
 module.exports = {
   testUserAPI,
   CreateUser,
@@ -420,4 +488,6 @@ module.exports = {
   GetNewUsers,
   CreateAdmin,
   GoogleLogIn,
+  VarifyEmail,
+  ResetPasword,
 };
