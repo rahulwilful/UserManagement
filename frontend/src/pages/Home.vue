@@ -1,8 +1,9 @@
 <template>
-  <div class="container mt-5">
-    <h1 class="d-flex justify-content-center align-items-center">Wellcome To User Management System</h1>
+  <div class="container-fluid d-flex justify-content-center align-items-center vh-100">
+    <h1 class="">Welcome To User Management System</h1>
   </div>
 </template>
+
 <script>
 import axios from "axios";
 

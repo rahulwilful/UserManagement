@@ -24,7 +24,7 @@
                   <input type="password" class="form-control" id="exampleInputPassword1" v-model="form.password" />
                 </div>
               </div>
-              <!-- /////////////////////////////////////////////////////////////////////////////////// -->
+              <!-- //////////////////////////////////// New colunn starts /////////////////////////////////////////////// -->
               <div class="col-6">
                 <div class="mb-3">
                   <label for="facebook" class="form-label">Facebook</label>
@@ -144,9 +144,6 @@ export default {
       } else {
         console.log("Form Values Are ", this.form, this.error);
       }
-    },
-    redirect() {
-      this.$router.push("/login");
     },
   },
   async created() {

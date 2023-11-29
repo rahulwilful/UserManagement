@@ -51,7 +51,7 @@
                   </div>
                 </div>
 
-                <!-- /////////////////////////////////////////////////////////////////// -->
+                <!-- ///////////////////////////////////// New colunn starts //////////////////////////////// -->
                 <div class="col-md-6">
                   <div class="mt-1">
                     <label class="small mb-1" for="joining_date">Joining Date</label>
@@ -113,9 +113,6 @@ export default {
     };
   },
 
-  methods: {
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-  },
   async beforeCreate() {
     const auth = {
       headers: {

@@ -16,19 +16,23 @@
             </div>
             <!-- Profile picture upload form -->
             <div>
-              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Change Profile</button>
+              <!-- Profile picture upload button-->
+              <!-- Button trigger modal -->
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Change Profile</button>
 
-              <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <!-- Modal for image upload -->
+              <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h1 class="modal-title fs-5" id="exampleModalLabel">Upload Image</h1>
+                      <h1 class="modal-title fs-5" id="upload_image">Upload Image</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                       <div class="mb-3">
                         <label for="imageInput" class="form-label">Upload Image</label>
                         <input class="form-control" type="file" id="imageInput" accept="image/*" @change="handleFileChange" />
-                        <img v-if="imageUrl" :src="imageUrl" class="mt-2" style="max-width: 100%; max-height: 200px" alt="Preview" :v-model="newProfile" />
+                        <img v-if="imageUrl" :src="imageUrl" class="mt-2" style="max-width: 100%; max-height: 200px" alt="Preview" :v-model="form.newProfile" />
                       </div>
                     </div>
                     <div class="modal-footer">
@@ -59,7 +63,7 @@
                   <div class="col-md-6">
                     <div class="mt-1">
                       <label class="small mb-1" for="email">Email</label>
-                      <input class="form-control" id="email" type="text" v-model="form.email" />
+                      <input :disabled="true" class="form-control" id="email" type="text" v-model="form.email" />
                     </div>
                     <!-- Form Group (location)-->
                     <div class="mt-2">
@@ -67,20 +71,28 @@
                       <input class="form-control" id="mobile_no" type="text" v-model="form.mobile_no" />
                     </div>
                     <div class="mt-2">
-                      <label class="small mb-1" for="department">Department</label>
-                      <input class="form-control" id="department" type="email" v-model="form.department" />
+                      <label for="form.department" class="form-label">Select Department*</label>
+                      <select class="form-select" aria-label="Default select example" v-model="form.department">
+                        <option :value="item._id" v-for="item in departments" :key="item.name">
+                          {{ item.name }}
+                        </option>
+                      </select>
                     </div>
                     <div class="mt-2">
-                      <label class="small mb-1" for="role_type">Role Type</label>
-                      <input class="form-control" id="role_type" type="email" v-model="form.role_type" />
+                      <label for="form.role_type" class="form-label">Select Role Type*</label>
+                      <select class="form-select" aria-label="Default select example" v-model="form.role_type">
+                        <option :value="item._id" v-for="item in role_types" :key="item">
+                          {{ item.name }}
+                        </option>
+                      </select>
                     </div>
                   </div>
 
-                  <!-- /////////////////////////////////////////////////////////////////// -->
+                  <!-- /////////////////////////////////// New colunn starts /////////////////////////////// -->
                   <div class="col-md-6">
                     <div class="form-check mb-3">
                       <label class="form-check-label" for="flexCheckDefault">Whatsapp Number </label>
-                      <input class="form-check-input border border-dark" type="checkbox" v-on:click="form.whatsapp_status = !form.whatsapp_status" />
+                      <input class="form-check-input border border-dark" type="checkbox" v-model="form.whatsapp_status" v-on:click="form.whatsapp_status = !form.whatsapp_status" />
                     </div>
                     <div class="mb-3" v-if="form.whatsapp_status">
                       <input type="number" class="form-control" id="whatsapp_no" v-model="form.whatsapp_no" placeholder="Enter Whatsapp Number" />
@@ -137,6 +149,8 @@ export default {
         newProfile: "",
       },
       id: "",
+      departments: "",
+      role_types: "",
       selectedImage: null,
       base64Image: null,
     };
@@ -145,7 +159,7 @@ export default {
   methods: {
     async handleSubmit() {
       try {
-        const response = await axios.post(`http://localhost:3001/user/update/${this.id}`, this.form);
+        const response = await axios.post(`http://localhost:3001/user/adminuserupdate/${this.id}`, this.form);
         // Handle success, e.g., show a success message
         console.log("User updated successfully", response.data);
         toast.success("User updated successfully", {
@@ -229,10 +243,12 @@ export default {
       },
     };
     // console.log(auth);
+    //Checking for Role_type admin else redirect to dashboard
     try {
       const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
         console.log(err);
         if (err.response.status == 401) {
+          //checking if logged in esle redirect to login
           this.$router.push("/login");
         }
       });
@@ -250,6 +266,7 @@ export default {
       console.log("error: ", e);
     }
   },
+  //Retriveing user details
   async created() {
     const auth = {
       headers: {
@@ -278,10 +295,31 @@ export default {
       this.form.instagram = userDetails.data.instagram;
       this.form.whatsapp_status = userDetails.data.whatsapp_status;
       this.form.whatsapp_no = userDetails.data.whatsapp_no;
-      this.form.department = userDetails.data.department.name;
-      this.form.role_type = userDetails.data.role_type.name;
+      this.form.department = userDetails.data.department._id;
+      this.form.role_type = userDetails.data.role_type._id;
       this.form.profile = userDetails.data.profile;
       this.id = userDetails.data._id;
+    } catch (e) {
+      console.log("error: ", e);
+    }
+
+    try {
+      const departmentData = await axios.get("http://localhost:3001/department/getalldepts").catch((err) => {
+        console.log(err);
+        if (err.response.status == 401) {
+          console.log("error in getting departments");
+        }
+      });
+
+      const role_typeData = await axios.get("http://localhost:3001/role_type/getallrole_types").catch((err) => {
+        console.log(err);
+        if (err.response.status == 401) {
+          console.log("error in getting role_types");
+        }
+      });
+
+      this.departments = departmentData.data.result;
+      this.role_types = role_typeData.data.result;
     } catch (e) {
       console.log("error: ", e);
     }

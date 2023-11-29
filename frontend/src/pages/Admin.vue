@@ -1,16 +1,16 @@
 <template>
   <div class="container mt-5">
     <h1 class="text-center mb-4">Manage Users</h1>
-    <div class="mb-3">
+    <div class="">
       <router-link to="/createadmin">
         <button type="button" class="btn btn-primary btn-lg shadow-lg">
           <i class="bi bi-person-plus-fill"></i>
         </button>
       </router-link>
     </div>
-    <div class="container">
-      <table class="table">
-        <thead>
+    <div class="container mt-5">
+      <table class="table table-striped">
+        <thead class="thead-dark">
           <tr>
             <th>Name</th>
             <th>Department</th>
@@ -93,7 +93,8 @@ export default {
         console.log(err);
       });
       this.allUsers = allUsers.data;
-      console.log(allUsers.data);
+      this.allUsers = this.allUsers.filter((users) => users._id != this.id);
+      console.log(this.allUsers);
     } catch (e) {
       console.log("error: ", e);
     }

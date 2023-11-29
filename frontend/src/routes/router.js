@@ -13,7 +13,7 @@ import MoreDetails from "../pages/MoreDetails.vue";
 import GoogleSignIn from "../pages/GoogleSignIn.vue";
 import ForgotPassword from "../pages/ForgotPassword.vue";
 import ResetPassword from "../pages/ResetPassword.vue";
-import Default from "../views/Default.vue";
+import DefaultView from "../views/DefaultView.vue";
 import DashboardView from "../views/DashboardView.vue";
 
 const routes = [
@@ -33,24 +33,20 @@ const routes = [
     path: "/resetpassword/:email/:paramsotp",
     name: "EnterEmail",
     component: ResetPassword,
-    props: true,
+    props: (route) => ({
+      email: route.params.email,
+      paramsotp: parseInt(route.params.paramsotp),
+    }),
   },
   {
     path: "/register",
     component: Register,
   },
   {
-    path: "/login",
-    component: Login, // Use 'component' instead of 'components'
-  },
-  {
     path: "/register",
     component: Register,
   },
-  {
-    path: "/",
-    component: Home,
-  },
+
   {
     path: "/myaccount",
     component: MyAccount,
@@ -100,9 +96,9 @@ const router = createRouter({
 
 export default router;
 
-/*  {
+/* {
     path: "/",
-    component: Default,
+    component: DefaultView,
     children: [
       {
         path: "/",
@@ -120,6 +116,19 @@ export default router;
         path: "/googlesignin",
         component: GoogleSignIn,
       },
+      {
+        path: "/forgotpassword",
+        component: ForgotPassword,
+      },
+      {
+        path: "/resetpassword/:email/:paramsotp",
+        name: "EnterEmail",
+        component: ResetPassword,
+        props: (route) => ({
+          email: route.params.email,
+          paramsotp: parseInt(route.params.paramsotp),
+        }),
+      },
     ],
   },
   {
@@ -132,7 +141,7 @@ export default router;
       },
       {
         path: "/edit",
-        component: UserEdit,
+        component: Edit,
       },
       {
         path: "/dashboard",

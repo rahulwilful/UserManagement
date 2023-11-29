@@ -14,7 +14,7 @@
               <input type="password" class="form-control" id="form.password" v-model="form.password" />
             </div>
             <div class="d-grid gap-2">
-              <button v-on:click="handleSubmit" class="btn btn-dark" type="button">Login</button>
+              <button v-on:click.prevent="handleSubmit" class="btn btn-dark" type="button">Login</button>
               <router-link to="/forgotpassword"><p>forgot password?</p></router-link>
             </div>
 
@@ -92,7 +92,6 @@ export default {
     },
 
     async handleSubmit(e) {
-      e.preventDefault();
       this.error = [];
       for (const item in this.form) {
         if (this.form[item] === "" || this.form[item].length === 0) {

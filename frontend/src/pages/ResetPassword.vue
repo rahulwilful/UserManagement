@@ -13,18 +13,21 @@
         </div>
       </div>
     </div>
+
     <div v-if="isOTP" class="row">
       <div class="d-flex justify-content-center align-items-center mt-5">
         <div class="card text-center my-5 shadow-lg">
           <div class="card-body my-5 mx-5">
             <h1 class="card-title">Enter New Password</h1>
-            <div class="mb-3 mt-4">
-              <input type="password" class="form-control" id="form.password" v-model="form.password" placeholder="Enter new password" />
-            </div>
-            <div class="mb-3">
-              <input type="password" class="form-control" id="form.confirmPassword" v-model="form.confirmPassword" placeholder="Confirm new pasword" />
-            </div>
-            <button type="button" v-on:click="handleSubmit" class="btn btn-primary">Send OTP</button>
+            <form>
+              <div class="mb-3 mt-4">
+                <input type="password" class="form-control" id="form.password" v-model="form.password" placeholder="Enter new password" />
+              </div>
+              <div class="mb-3">
+                <input type="password" class="form-control" id="form.confirmPassword" v-model="form.confirmPassword" placeholder="Confirm new pasword" />
+              </div>
+              <button type="button" v-on:click="handleSubmit" class="btn btn-primary">Send OTP</button>
+            </form>
           </div>
         </div>
       </div>
@@ -61,7 +64,7 @@ export default {
     };
   },
   methods: {
-    async handleSubmit() {
+    async handleSubmit(e) {
       e.preventDefault();
       this.error = [];
       for (const item in this.form) {
@@ -70,45 +73,41 @@ export default {
         }
       }
       console.log(this.form.email);
-      if (this.error.length === 0 && password == confirmPassword) {
+      if (this.error.length === 0 && this.form.password == this.form.confirmPassword) {
         const response = await axios.post("http://localhost:3001/user/resetpassword", this.form).catch((err) => {
           console.error("Error , Somthing went wrong", err);
           toast.error("Somthing went wrong", {
             autoClose: 1500,
           });
         });
-        console.log("User loggedin successfully", response.data);
 
-        toast.success("Log In Successfull", {
+        toast.success("Password Reset Successfull", {
           autoClose: 1500,
         });
         setTimeout(() => {
           this.$router.push("/login");
         }, 1500);
       } else {
-        if (password != confirmPassword) {
-          toast.error("Password mismatched, Try again", {
-            autoClose: 1500,
-          });
-        } else {
-          console.log("Form Values Are ", this.form, this.error);
-        }
+        toast.error("Password mismatched, Try again", {
+          autoClose: 1500,
+        });
       }
     },
-  },
-  varifyOTP() {
-    const otp = this.paramsotp;
-    console.log(otp);
-    console.log(this.otp);
-    if (otp == this.otp) {
-      toast.success("Varified OTP", {
-        autoClose: 1500,
-      });
-      setTimeout(() => {
-        this.isOTP = true;
-      }, 1500);
-      this.form.email = this.email;
-    }
+
+    varifyOTP() {
+      const otp = this.paramsotp / 5423432435433434;
+      console.log(otp);
+      console.log(this.otp);
+      if (otp == this.otp) {
+        toast.success("Varified OTP", {
+          autoClose: 1500,
+        });
+        setTimeout(() => {
+          this.isOTP = true;
+        }, 1500);
+        this.form.email = this.email;
+      }
+    },
   },
 };
 </script>

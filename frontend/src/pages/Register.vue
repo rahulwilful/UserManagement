@@ -24,7 +24,7 @@
                   <input type="password" class="form-control" id="form.password" v-model="form.password" />
                 </div>
               </div>
-              <!-- /////////////////////////////////////////////////////////////////////////////////// -->
+              <!-- ////////////////////////////////////// New colunn starts /////////////////////////////////////////////// -->
               <div class="col-6">
                 <div class="mb-3">
                   <label for="form.facebook" class="form-label">Facebook</label>

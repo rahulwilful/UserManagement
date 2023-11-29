@@ -48,7 +48,7 @@ export default {
         toast.success("OTP Sent", {
           autoClose: 1500,
         });
-        const paramsotp = random4didgit;
+        const paramsotp = 5423432435433434 * random4didgit;
         setTimeout(() => {
           this.$router.push(`/resetpassword/${this.form.email}/${paramsotp}`);
         }, 1500);

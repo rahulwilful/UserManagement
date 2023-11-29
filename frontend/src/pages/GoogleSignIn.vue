@@ -10,7 +10,7 @@
       <div v-if="isSignedUp" class="container container-md container-lg mt-5">
         <div class="row justify-content-center align-items-center">
           <div class="col-md-5 bg-light text-dark rounded shadow-lg">
-            <h1 class="text-center mt-2">Register</h1>
+            <h1 class="text-center mt-2">Enter More Details</h1>
             <form class="my-3">
               <div class="row">
                 <div class="col-6">
@@ -31,7 +31,7 @@
                     <input type="password" class="form-control" id="form.password" v-model="form.password" />
                   </div>
                 </div>
-                <!-- /////////////////////////////////////////////////////////////////////////////////// -->
+                <!-- ////////////////////////////////////////// New colunn starts /////////////////////////////////////////// -->
                 <div class="col-6">
                   <div class="mb-3">
                     <label for="form.facebook" class="form-label">Facebook</label>
@@ -77,7 +77,7 @@
           </div>
         </div>
       </div>
-
+      <!-- Goggle login option -->
       <div v-if="!isSignedUp" class="row mt-5">
         <div class="container d-flex justify-content-center align-items-center">
           <GoogleLogin :callback="handleGoogleLogin" />

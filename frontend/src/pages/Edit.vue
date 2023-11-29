@@ -7,6 +7,7 @@
           <div class="card-header">Profile Picture</div>
           <div class="card-body text-center">
             <!-- Profile picture image-->
+
             <img v-if="form.profile" class="img-account-profile rounded-circle mb-2" :src="profile" alt="Profile Picture" />
             <img v-else class="img-account-profile rounded-circle mb-2" src="../assets/profile-circle.svg" alt="Default Profile Picture" />
 
@@ -20,12 +21,12 @@
               <!-- Button trigger modal -->
               <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Change Profile</button>
 
-              <!-- Modal -->
+              <!-- Modal for image upload -->
               <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h1 class="modal-title fs-5" id="staticBackdropLabel">Upload Image</h1>
+                      <h1 class="modal-title fs-5" id="upload_image">Upload Image</h1>
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -63,7 +64,7 @@
                   <div class="col-md-6">
                     <div class="mt-1">
                       <label class="small mb-1" for="email">Email</label>
-                      <input class="form-control" id="email" type="text" v-model="form.email" />
+                      <input :disabled="true" class="form-control" id="email" type="text" v-model="form.email" />
                     </div>
                     <!-- Form Group (location)-->
                     <div class="mt-2">
@@ -72,19 +73,22 @@
                     </div>
                     <div class="mt-2">
                       <label class="small mb-1" for="department">Department</label>
-                      <input class="form-control" id="department" type="email" v-model="form.department" />
+                      <input :disabled="true" class="form-control" id="department" type="email" v-model="form.department" />
                     </div>
                     <div class="mt-2">
                       <label class="small mb-1" for="role_type">Role Type</label>
-                      <input class="form-control" id="role_type" type="email" v-model="form.role_type" />
+                      <input :disabled="true" class="form-control" id="role_type" type="email" v-model="form.role_type" />
                     </div>
                   </div>
 
                   <!-- //////////////////////////// Next Column/////////////////////////////////////// -->
                   <div class="col-md-6">
-                    <div class="mt-1">
-                      <label class="small mb-1" for="whatsapp_no">Whatsapp Number</label>
-                      <input class="form-control" id="whatsapp_no" type="text" name="birthday" v-model="form.whatsapp_no" />
+                    <div class="form-check mb-3">
+                      <label class="form-check-label" for="form.whatsapp_status">Whatsapp Number </label>
+                      <input v-model="form.whatsapp_status" class="form-check-input border border-dark" type="checkbox" v-on:click="form.whatsapp_status = !form.whatsapp_status" />
+                    </div>
+                    <div class="mb-3" v-if="form.whatsapp_status">
+                      <input type="number" class="form-control" id="form.whatsapp_no" v-model="form.whatsapp_no" placeholder="Enter Whatsapp Number" />
                     </div>
                     <div class="mt-2">
                       <label class="small mb-1" for="facebook">Facebook</label>
@@ -197,16 +201,18 @@ export default {
     ////////////////////////////////////////////////////////////////////////////////////////////////
     async changeProfile() {
       console.log(this.form.newProfile);
+      const formData = new FormData();
+      formData.append("file", this.form.newProfile);
       try {
-        const result = await axios.post(`https://api.cloudinary.com/v1_1/drp5eeosr/image/upload/file=${this.form.newProfile}&upload_preset=images_preset`);
-        console.log(result);
-        /*  const response = await axios.post(`http://localhost:3001/user/updateprofile/${this.id}`, this.form);
+        /* const result = await axios.post(`https://api.cloudinary.com/v1_1/drp5eeosr/image/upload/file=${this.form.newProfile}&upload_preset=images_preset`);
+        console.log(result); */
+        const response = await axios.post(`http://localhost:3001/user/upload/${this.id}`, formData);
         // Handle success, e.g., show a success message
         console.log("User updated successfully", response.data);
         toast.success("Profile updated successfully", {
           autoClose: 1500,
         });
-        this.$router.go(0); */
+        this.$router.go(0);
         // this.$router.push("/login");
       } catch (error) {
         // Handle errors, e.g., show an error message

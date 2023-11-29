@@ -18,3 +18,78 @@
                   </div>
                 </div>
               </div>
+
+
+
+             
+
+             /*  {
+    path: "/",
+    component: Home,
+  },
+  {
+    path: "/login",
+    component: Login,
+  },
+  {
+    path: "/forgotpassword",
+    component: ForgotPassword,
+  },
+  {
+    path: "/resetpassword/:email/:paramsotp",
+    name: "EnterEmail",
+    component: ResetPassword,
+    props: (route) => ({
+      email: route.params.email,
+      paramsotp: parseInt(route.params.paramsotp),
+    }),
+  },
+  {
+    path: "/register",
+    component: Register,
+  },
+  {
+    path: "/register",
+    component: Register,
+  },
+
+  {
+    path: "/myaccount",
+    component: MyAccount,
+  },
+  {
+    path: "/edit",
+    component: Edit,
+  },
+  {
+    path: "/dashboard",
+    component: Dashboard,
+  },
+  {
+    path: "/admin",
+    component: Admin,
+  },
+  {
+    path: "/createadmin",
+    component: CreateAdmin,
+  },
+  {
+    path: "/googlesignin",
+    component: GoogleSignIn,
+  },
+  {
+    path: "/adminuseredit/:userId",
+    name: "Admin",
+    component: AdminUserEdit,
+    props: true,
+  },
+  {
+    path: "/moredetails/:userId",
+    name: "dashboard",
+    component: MoreDetails,
+    props: true,
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    component: NotFound,
+  }, */

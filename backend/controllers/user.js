@@ -5,6 +5,7 @@ const secret = "test";
 const logger = require("../config/logger.js");
 const jwt = require("jsonwebtoken");
 const cloudinary = require("../config/imageDB.js").v2;
+const multer = require("multer");
 
 const testUserAPI = async (req, res) => {
   return res.status(200).send("User API test successfull");
@@ -474,6 +475,46 @@ const ResetPasword = async (req, res) => {
   }
 };
 
+//@desc Admin User Update API
+//@route GET /api/v1/user/adminuserupdate
+//@access Public
+const AdminUserUpdate = async (req, res) => {
+  const errors = validationResult(req); //checking for validations
+  const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress; //wats remote address?
+
+  const id = req.params.id;
+  const data = matchedData(req);
+  console.log(data.email);
+  if (!errors.isEmpty()) {
+    logger.error(`${ip}: API /api/v1/user/login  responnded with Error `);
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const user = await User.findOneAndUpdate(
+      {
+        _id: id,
+      },
+      {
+        name: data.name,
+        mobile_no: data.mobile_no,
+        whatsapp_no: data.whatsapp_no,
+        instagram: data.instagram,
+        facebook: data.facebook,
+        email: data.email,
+        department: data.department,
+        role_type: data.role_type,
+        whatsapp_status: data.whatsapp_status,
+      }
+    );
+    logger.info(`${ip}: API /api/v1/update | responnded with "User updated successfully" `);
+    return res.status(201).json({ result: user });
+  } catch (e) {
+    logger.error(`${ip}: API /api/v1/user/update  responnded with Error "while updating user" `);
+    return res.status(500).json(e, " Something went wrong while updating data");
+  }
+};
+
 module.exports = {
   testUserAPI,
   CreateUser,
@@ -490,4 +531,5 @@ module.exports = {
   GoogleLogIn,
   VarifyEmail,
   ResetPasword,
+  AdminUserUpdate,
 };

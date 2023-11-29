@@ -2,9 +2,9 @@
   <div class="container mt-5">
     <h1 class="text-center mb-4">Dashboard</h1>
 
-    <div class="container">
-      <table class="table">
-        <thead>
+    <div class="container mt-5">
+      <table class="table table-striped">
+        <thead class="thead-dark">
           <tr>
             <th>Name</th>
             <th>Department</th>
@@ -38,6 +38,7 @@ export default {
       allUsers: [],
     };
   },
+  //check for if user logged in
   async beforeCreate() {
     const auth = {
       headers: {
@@ -59,6 +60,7 @@ export default {
       console.log("error: ", e);
     }
   },
+  //getting all users
   async created() {
     const auth = {
       headers: {
@@ -80,6 +82,7 @@ export default {
         console.log(err);
       });
       this.allUsers = allUsers.data;
+      this.allUsers = this.allUsers.filter((users) => users._id != this.id);
       console.log(allUsers.data);
     } catch (e) {
       console.log("error: ", e);
