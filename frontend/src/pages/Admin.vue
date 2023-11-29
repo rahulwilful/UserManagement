@@ -1,15 +1,44 @@
 <template>
   <div class="container mt-5">
     <h1 class="text-center mb-4">Manage Users</h1>
-    <div class="">
-      <router-link to="/createadmin">
-        <button type="button" class="btn btn-primary btn-lg shadow-lg">
-          <i class="bi bi-person-plus-fill"></i>
-        </button>
-      </router-link>
+
+    <div class="container text-center">
+      <div class="row">
+        <div class="col">
+          <div class="card" style="width: 18rem">
+            <div class="card-body shadow-lg">
+              <h5 class="card-title">Admins : {{ adminCount }}</h5>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card" style="width: 18rem">
+            <div class="card-body shadow-lg">
+              <h5 class="card-title">Users : {{ userCount }}</h5>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card" style="width: 18rem">
+            <div class="card-body shadow-lg">
+              <h5 class="card-title">Total Users : {{ userCount + adminCount }}</h5>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="">
+            <router-link to="/createadmin">
+              <button type="button" class="btn btn-primary btn-lg shadow-lg">
+                <i class="bi bi-person-plus-fill"></i>
+              </button>
+            </router-link>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="container mt-5">
-      <table class="table table-striped">
+
+    <div class="container mt-5 shadow-lg">
+      <table class="table table-striped table-bordered">
         <thead class="thead-dark">
           <tr>
             <th>Name</th>
@@ -19,12 +48,14 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in allUsers" :key="item._id">
+          <tr v-for="item in allUsers" :key="item._id" class="table-row-float my-3">
             <td>{{ item.name }}</td>
             <td>{{ item.department.name }}</td>
             <td>{{ item.role_type.name }}</td>
-            <td>
-              <router-link class="btn btn-primary" :to="'/adminuseredit/' + item._id" role="button">Edit</router-link>
+            <td class="d-flex justif-content-center align-items-center">
+              <router-link class="btn btn-primary" :to="'/adminuseredit/' + item._id" role="button">
+                <i class="bi bi-pen"></i>
+              </router-link>
             </td>
           </tr>
         </tbody>
@@ -42,6 +73,10 @@ export default {
       name: "",
       role_type: "",
       allUsers: [],
+      id: "",
+      adminCount: 0,
+      userCount: 0,
+      totalUsers: 0,
     };
   },
   async beforeCreate() {
@@ -66,7 +101,7 @@ export default {
       });
       // console.log(userDetails.data.role_type.name);
       if (userDetails.data.role_type.name !== "Admin") {
-        this.$router.push("/dashboard");
+        this.$router.push("/");
       }
     } catch (e) {
       console.log("error: ", e);
@@ -93,6 +128,14 @@ export default {
         console.log(err);
       });
       this.allUsers = allUsers.data;
+
+      for (let item of this.allUsers) {
+        if (item.role_type.value == "user") {
+          this.userCount++;
+        } else {
+          this.adminCount++;
+        }
+      }
       this.allUsers = this.allUsers.filter((users) => users._id != this.id);
       console.log(this.allUsers);
     } catch (e) {
@@ -101,3 +144,14 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.table-row-float {
+  transition: transform 0.3s ease-in-out;
+}
+
+.table-row-float:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+</style>

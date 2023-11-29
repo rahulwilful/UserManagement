@@ -260,7 +260,7 @@ export default {
       });
       // console.log(userDetails.data.role_type.name);
       if (userDetails.data.role_type.name !== "Admin") {
-        this.$router.push("/dashboard");
+        this.$router.push("/");
       }
     } catch (e) {
       console.log("error: ", e);

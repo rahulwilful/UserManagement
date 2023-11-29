@@ -21,7 +21,7 @@
             <div class="my-2 text-center">OR</div>
 
             <div class="d-grid gap-2 mt-3">
-              <button class="btn btn-outline-primary" type="button">
+              <button class="btn btn-outline-light" type="button">
                 <GoogleLogin :callback="handleGoogleLogin" />
               </button>
             </div>
@@ -87,7 +87,7 @@ export default {
         autoClose: 1500,
       });
       setTimeout(() => {
-        this.$router.push("/dashboard");
+        this.$router.push("/");
       }, 1500);
     },
 
@@ -124,7 +124,7 @@ export default {
           autoClose: 1500,
         });
         setTimeout(() => {
-          this.$router.push("/dashboard");
+          this.$router.push("/");
         }, 1500);
       } else {
         console.log("Form Values Are ", this.form, this.error);

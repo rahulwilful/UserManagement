@@ -21,75 +21,45 @@
 
 
 
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <!-- Modal Body -->
+                  <div class="container bootdey">
+                    <div class="row">
+                      <div class="col">
+                        <div class="user-widget-2">
+                          <ul class="list-group">
+                            <li v-for="item in newUsers" :key="item._id" class="list-group-item d-flex justify-content-between align-items-center" :class="{ 'fade-out': item.approved }">
+                              <div v-if="!item.approved">
+                                <h5 class="mb-1"><strong>Name:</strong> {{ item.name }}</h5>
+                                <p class="mb-1"><strong>Department:</strong> {{ item.department.name }}</p>
+                                <p class="mb-1"><strong>Role:</strong> {{ item.role_type.name }}</p>
+                              </div>
+                              <div>
+                                <button type="button" class="btn btn-primary" @click="approveUser(item._id)" :disabled="item.approved">
+                                  {{ item.approved ? "Approved" : "Approve" }}
+                                </button>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
              
-
-             /*  {
-    path: "/",
-    component: Home,
-  },
-  {
-    path: "/login",
-    component: Login,
-  },
-  {
-    path: "/forgotpassword",
-    component: ForgotPassword,
-  },
-  {
-    path: "/resetpassword/:email/:paramsotp",
-    name: "EnterEmail",
-    component: ResetPassword,
-    props: (route) => ({
-      email: route.params.email,
-      paramsotp: parseInt(route.params.paramsotp),
-    }),
-  },
-  {
-    path: "/register",
-    component: Register,
-  },
-  {
-    path: "/register",
-    component: Register,
-  },
-
-  {
-    path: "/myaccount",
-    component: MyAccount,
-  },
-  {
-    path: "/edit",
-    component: Edit,
-  },
-  {
-    path: "/dashboard",
-    component: Dashboard,
-  },
-  {
-    path: "/admin",
-    component: Admin,
-  },
-  {
-    path: "/createadmin",
-    component: CreateAdmin,
-  },
-  {
-    path: "/googlesignin",
-    component: GoogleSignIn,
-  },
-  {
-    path: "/adminuseredit/:userId",
-    name: "Admin",
-    component: AdminUserEdit,
-    props: true,
-  },
-  {
-    path: "/moredetails/:userId",
-    name: "dashboard",
-    component: MoreDetails,
-    props: true,
-  },
-  {
-    path: "/:pathMatch(.*)*",
-    component: NotFound,
-  }, */

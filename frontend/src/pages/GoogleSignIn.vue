@@ -1,5 +1,5 @@
 <template>
-  <div class="container d-flex justify-content-center align-items-center">
+  <div class="container d-flex vh-100">
     <div class="container text-center">
       <div v-if="!isSignedUp" class="row">
         <div>

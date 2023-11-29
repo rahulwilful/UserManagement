@@ -55,10 +55,10 @@ const routes = [
     path: "/edit",
     component: Edit,
   },
-  {
+  /*  {
     path: "/dashboard",
     component: Dashboard,
-  },
+  }, */
   {
     path: "/admin",
     component: Admin,
@@ -77,12 +77,12 @@ const routes = [
     component: AdminUserEdit,
     props: true,
   },
-  {
+  /*   {
     path: "/moredetails/:userId",
     name: "dashboard",
     component: MoreDetails,
     props: true,
-  },
+  }, */
   {
     path: "/:pathMatch(.*)*",
     component: NotFound,

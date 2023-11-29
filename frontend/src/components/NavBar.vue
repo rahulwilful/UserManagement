@@ -13,9 +13,7 @@
             <li class="nav-item">
               <router-link class="nav-link active" aria-current="page" to="/">Home</router-link>
             </li>
-            <li v-if="form.role_type" class="nav-item">
-              <router-link class="nav-link active" aria-current="page" to="/dashboard">Dashboard</router-link>
-            </li>
+
             <li class="nav-item" v-if="form.role_type == 'Admin'">
               <router-link class="nav-link active" aria-current="page" to="/admin">Manage Users</router-link>
             </li>
