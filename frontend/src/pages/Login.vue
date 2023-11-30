@@ -46,7 +46,6 @@ import "vue3-toastify/dist/index.css";
 export default {
   name: "Login",
   data() {
-    //This the way u return any value or property
     return {
       form: {
         email: "",
@@ -55,6 +54,7 @@ export default {
       error: [],
     };
   },
+
   methods: {
     async handleGoogleLogin(response) {
       console.log("logged in");
@@ -82,7 +82,6 @@ export default {
       console.log("User loggedin successfully", googleResponse.data);
       console.log("User loggedin successfully", googleResponse.data.token);
       localStorage.setItem("token", googleResponse.data.token);
-
       toast.success("Log In Successfull", {
         autoClose: 1500,
       });
@@ -98,6 +97,7 @@ export default {
           this.error.push(item);
         }
       }
+
       if (this.error.length === 0) {
         const response = await axios.post("http://localhost:3001/user/login", this.form).catch((err) => {
           console.log(err);
@@ -111,7 +111,7 @@ export default {
             });
           } else {
             console.error("Error , cannot loggin", err);
-            toast.error("Somthing Went wrong", {
+            toast.error("Something Went wrong", {
               autoClose: 1500,
             });
           }
@@ -119,7 +119,6 @@ export default {
         console.log("User loggedin successfully", response.data);
         console.log("User loggedin successfully", response.data.token);
         localStorage.setItem("token", response.data.token);
-
         toast.success("Log In Successfull", {
           autoClose: 1500,
         });
@@ -130,6 +129,7 @@ export default {
         console.log("Form Values Are ", this.form, this.error);
       }
     },
+
     redirectRegister() {
       this.$router.push("/register");
     },

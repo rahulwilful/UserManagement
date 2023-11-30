@@ -119,7 +119,7 @@ import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 
 export default {
-  name: "Edit",
+  name: "UserEdit",
   data() {
     return {
       form: {
@@ -141,6 +141,40 @@ export default {
     };
   },
 
+  async created() {
+    const auth = {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    };
+    try {
+      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
+        console.log(err);
+        if (err.response.status == 401) {
+          this.$router.push("/login");
+        }
+      });
+      this.id = token.data.data._id;
+
+      const userDetails = await axios.get(`http://localhost:3001/user/get/${this.id}`).catch((err) => {
+        console.log(err);
+      });
+      this.form.name = userDetails.data.name;
+      this.form.mobile_no = userDetails.data.mobile_no;
+      this.form.email = userDetails.data.email;
+      this.form.facebook = userDetails.data.facebook;
+      this.form.instagram = userDetails.data.instagram;
+      this.form.whatsapp_status = userDetails.data.whatsapp_status;
+      this.form.whatsapp_no = userDetails.data.whatsapp_no;
+      this.form.department = userDetails.data.department.name;
+      this.form.role_type = userDetails.data.role_type.name;
+      this.form.profile = userDetails.data.profile;
+      this.id = userDetails.data._id;
+    } catch (e) {
+      console.log("error: ", e);
+    }
+  },
+
   methods: {
     async handleSubmit() {
       this.error = [];
@@ -154,15 +188,12 @@ export default {
       if (this.error.length === 0) {
         try {
           const response = await axios.post(`http://localhost:3001/user/update/${this.id}`, this.form);
-          // Handle success, e.g., show a success message
           console.log("User updated successfully", response.data);
           toast.success("User updated successfully", {
             autoClose: 1500,
           });
           this.$router.go(0);
-          // this.$router.push("/login");
         } catch (error) {
-          // Handle errors, e.g., show an error message
           console.error("Error updating user details", error);
           if (error.response.status == 400) {
             toast.error("check all the required feilds ", {
@@ -178,27 +209,24 @@ export default {
         console.log("Form Values Are ", this.form, this.error);
       }
     },
-    ////////////////////////////////////////////////////////////////////////////////////////////////
+
     async handleFileChange(event) {
       this.form.newProfile = event.target.files[0];
-      //console.log(this.form.newProfile);
     },
+
     convertToBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
-
         reader.onload = () => {
           resolve(reader.result.split(",")[1]);
         };
-
         reader.onerror = (error) => {
           reject(error);
         };
-
         reader.readAsDataURL(file);
       });
     },
-    ////////////////////////////////////////////////////////////////////////////////////////////////
+
     async changeProfile() {
       console.log(this.form.newProfile);
       const formData = new FormData();
@@ -207,59 +235,18 @@ export default {
         /* const result = await axios.post(`https://api.cloudinary.com/v1_1/drp5eeosr/image/upload/file=${this.form.newProfile}&upload_preset=images_preset`);
         console.log(result); */
         const response = await axios.post(`http://localhost:3001/user/upload/${this.id}`, formData);
-        // Handle success, e.g., show a success message
         console.log("User updated successfully", response.data);
         toast.success("Profile updated successfully", {
           autoClose: 1500,
         });
         this.$router.go(0);
-        // this.$router.push("/login");
       } catch (error) {
-        // Handle errors, e.g., show an error message
         console.error("Error updating profile", error);
-
         toast.error("Something went wrong", {
           autoClose: 1500,
         });
       }
     },
-  },
-
-  async created() {
-    const auth = {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    };
-    // console.log(auth);
-    try {
-      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
-        console.log(err);
-        if (err.response.status == 401) {
-          this.$router.push("/login");
-        }
-      });
-      //console.log(token);
-      this.id = token.data.data._id;
-      console.log("ID : ", this.id);
-      const userDetails = await axios.get(`http://localhost:3001/user/get/${this.id}`).catch((err) => {
-        console.log(err);
-      });
-      //console.log(userDetails);
-      this.form.name = userDetails.data.name;
-      this.form.mobile_no = userDetails.data.mobile_no;
-      this.form.email = userDetails.data.email;
-      this.form.facebook = userDetails.data.facebook;
-      this.form.instagram = userDetails.data.instagram;
-      this.form.whatsapp_status = userDetails.data.whatsapp_status;
-      this.form.whatsapp_no = userDetails.data.whatsapp_no;
-      this.form.department = userDetails.data.department.name;
-      this.form.role_type = userDetails.data.role_type.name;
-      this.form.profile = userDetails.data.profile;
-      this.id = userDetails.data._id;
-    } catch (e) {
-      console.log("error: ", e);
-    }
   },
 };
 </script>

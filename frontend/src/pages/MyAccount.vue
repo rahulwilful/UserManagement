@@ -106,7 +106,7 @@ export default {
         Authorization: "Bearer " + localStorage.getItem("token"),
       },
     };
-    // console.log(auth);
+
     try {
       const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
         console.log(err);
@@ -114,9 +114,8 @@ export default {
           this.$router.push("/login");
         }
       });
-      //console.log(token);
       this.id = token.data.data._id;
-      console.log("ID : ", this.id);
+
       const userDetails = await axios.get(`http://localhost:3001/user/get/${this.id}`).catch((err) => {
         console.log(err);
       });

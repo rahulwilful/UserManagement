@@ -89,7 +89,6 @@ import "vue3-toastify/dist/index.css";
 export default {
   name: "Register",
   data() {
-    //This the way u return any value or property
     return {
       form: {
         name: "",
@@ -108,9 +107,32 @@ export default {
       role_types: [],
     };
   },
+
+  async created() {
+    try {
+      const departmentData = await axios.get("http://localhost:3001/department/getalldepts").catch((err) => {
+        console.log(err);
+        if (err.response.status == 401) {
+          console.log("error in getting departments");
+        }
+      });
+      this.departments = departmentData.data.result;
+
+      const role_typeData = await axios.get("http://localhost:3001/role_type/getallrole_types").catch((err) => {
+        console.log("error", err);
+        if (err.response.status == 401) {
+          console.log("error in getting role_types");
+        }
+      });
+      this.role_types = role_typeData.data.result;
+      this.role_types = this.role_types.filter((roles) => roles.name !== "Admin");
+    } catch (e) {
+      console.log("error: ", e);
+    }
+  },
+
   methods: {
-    async handleSubmit(e) {
-      //e.preventDefault();
+    async handleSubmit() {
       this.error = [];
       for (const item in this.form) {
         if (this.form[item] === "" || this.form[item].length === 0) {
@@ -123,7 +145,7 @@ export default {
         try {
           const response = await axios.post("http://localhost:3001/user/add", this.form);
           console.log("Role_typeId: ", this.form.role_type);
-          // Handle success, e.g., show a success message
+
           console.log("User registered successfully", response.data);
           toast.success("Registerd successfully", {
             autoClose: 1500,
@@ -132,7 +154,6 @@ export default {
             this.$router.push("/login");
           }, 1500);
         } catch (error) {
-          // Handle errors, e.g., show an error message
           console.error("Error registering user", error);
           if (error.response.status == 403) {
             toast.error("only admin can create admin", {
@@ -152,37 +173,14 @@ export default {
         console.log("Form Values Are ", this.form, this.error);
       }
     },
+
     redirectLogin() {
       this.$router.push("/login");
     },
+
     redirectGoogleSign() {
       this.$router.push("/googlesignin");
     },
-  },
-  async created() {
-    try {
-      const departmentData = await axios.get("http://localhost:3001/department/getalldepts").catch((err) => {
-        console.log(err);
-        if (err.response.status == 401) {
-          console.log("error in getting departments");
-        }
-      });
-
-      const role_typeData = await axios.get("http://localhost:3001/role_type/getallrole_types").catch((err) => {
-        console.log(err);
-        if (err.response.status == 401) {
-          console.log("error in getting role_types");
-        }
-      });
-
-      this.departments = departmentData.data.result;
-      this.role_types = role_typeData.data.result;
-      this.role_types = this.role_types.filter((roles) => roles.name !== "Admin");
-      //console.log("department: ", this.departments);
-      //console.log("role_types: ", this.role_types);
-    } catch (e) {
-      console.log("error: ", e);
-    }
   },
 };
 </script>

@@ -67,7 +67,7 @@
 <script>
 import axios from "axios";
 export default {
-  name: "Admin",
+  name: "ManageUsers",
   data() {
     return {
       name: "",
@@ -85,7 +85,7 @@ export default {
         Authorization: "Bearer " + localStorage.getItem("token"),
       },
     };
-    // console.log(auth);
+
     try {
       const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
         console.log(err);
@@ -93,13 +93,11 @@ export default {
           this.$router.push("/login");
         }
       });
-      //console.log(token);
       const id = token.data.data._id;
-      // console.log("ID : ", id);
+
       const userDetails = await axios.get(`http://localhost:3001/user/get/${id}`).catch((err) => {
         console.log(err);
       });
-      // console.log(userDetails.data.role_type.name);
       if (userDetails.data.role_type.name !== "Admin") {
         this.$router.push("/");
       }
@@ -107,13 +105,14 @@ export default {
       console.log("error: ", e);
     }
   },
+
   async created() {
     const auth = {
       headers: {
         Authorization: "Bearer " + localStorage.getItem("token"),
       },
     };
-    // console.log(auth);
+
     try {
       const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
         console.log(err);
@@ -121,14 +120,12 @@ export default {
           this.$router.push("/login");
         }
       });
-      //console.log(token);
       this.id = token.data.data._id;
-      //console.log("ID : ", this.id);
+
       const allUsers = await axios.get(`http://localhost:3001/user/getallusers/`).catch((err) => {
         console.log(err);
       });
       this.allUsers = allUsers.data;
-
       for (let item of this.allUsers) {
         if (item.role_type.value == "user") {
           this.userCount++;
@@ -137,7 +134,6 @@ export default {
         }
       }
       this.allUsers = this.allUsers.filter((users) => users._id != this.id);
-      console.log(this.allUsers);
     } catch (e) {
       console.log("error: ", e);
     }

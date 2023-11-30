@@ -101,6 +101,68 @@ export default {
       id: "",
     };
   },
+
+  async beforeCreate() {
+    const auth = {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    };
+    try {
+      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
+        console.log(err);
+        if (err.response.status == 401) {
+          this.$router.push("/login");
+        }
+      });
+      const id = token.data.data._id;
+
+      const userDetails = await axios.get(`http://localhost:3001/user/get/${id}`).catch((err) => {
+        console.log(err);
+      });
+      if (userDetails.data.role_type.name !== "Admin") {
+        this.$router.push("/");
+      }
+    } catch (e) {
+      console.log("error: ", e);
+    }
+  },
+
+  async created() {
+    const auth = {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    };
+    try {
+      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
+        console.log(err);
+        if (err.response.status == 401) {
+          this.$router.push("/login");
+        }
+      });
+      this.id = token.data.data._id;
+
+      const departmentData = await axios.get("http://localhost:3001/department/getalldepts").catch((err) => {
+        console.log(err);
+        if (err.response.status == 401) {
+          // this.$router.push("/login");
+        }
+      });
+      this.departments = departmentData.data.result;
+
+      const role_typeData = await axios.get("http://localhost:3001/role_type/getallrole_types").catch((err) => {
+        console.log(err);
+        if (err.response.status == 401) {
+          //this.$router.push("/login");
+        }
+      });
+      this.role_types = role_typeData.data.result;
+    } catch (e) {
+      console.log("error: ", e);
+    }
+  },
+
   methods: {
     async handleSubmit(e) {
       e.preventDefault();
@@ -112,11 +174,11 @@ export default {
           }
         }
       }
+
       if (this.error.length === 0) {
         try {
           const response = await axios.post(`http://localhost:3001/user/createadmin/${this.id}`, this.form);
           console.log("Role_typeId: ", this.form.role_type);
-          // Handle success, e.g., show a success message
           console.log("User registered successfully", response.data);
           toast.success("Admin Created", {
             autoClose: 1500,
@@ -125,7 +187,6 @@ export default {
             this.$router.push("/admin");
           }, 1500);
         } catch (error) {
-          // Handle errors, e.g., show an error message
           console.error("Error registering user", error);
           if (error.response.status == 403) {
             toast.error("only admin can create admin", {
@@ -146,71 +207,5 @@ export default {
       }
     },
   },
-  async created() {
-    const auth = {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    };
-    try {
-      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
-        console.log(err);
-        if (err.response.status == 401) {
-          this.$router.push("/login");
-        }
-      });
-      this.id = token.data.data._id;
-      const departmentData = await axios.get("http://localhost:3001/department/getalldepts").catch((err) => {
-        console.log(err);
-        if (err.response.status == 401) {
-          // this.$router.push("/login");
-        }
-      });
-
-      const role_typeData = await axios.get("http://localhost:3001/role_type/getallrole_types").catch((err) => {
-        console.log(err);
-        if (err.response.status == 401) {
-          //this.$router.push("/login");
-        }
-      });
-
-      this.departments = departmentData.data.result;
-      this.role_types = role_typeData.data.result;
-      console.log("department: ", this.departments);
-      //console.log("role_types: ", this.role_types);
-    } catch (e) {
-      console.log("error: ", e);
-    }
-  },
-  async beforeCreate() {
-    const auth = {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    };
-    // console.log(auth);
-    try {
-      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
-        console.log(err);
-        if (err.response.status == 401) {
-          this.$router.push("/login");
-        }
-      });
-      //console.log(token);
-      const id = token.data.data._id;
-      // console.log("ID : ", id);
-      const userDetails = await axios.get(`http://localhost:3001/user/get/${id}`).catch((err) => {
-        console.log(err);
-      });
-      // console.log(userDetails.data.role_type.name);
-      if (userDetails.data.role_type.name !== "Admin") {
-        this.$router.push("/");
-      }
-    } catch (e) {
-      console.log("error: ", e);
-    }
-  },
 };
 </script>
-
-<style scoped></style>

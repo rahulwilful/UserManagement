@@ -3,10 +3,10 @@ import Login from "../pages/Login.vue"; // Make sure the import path is correct
 import Register from "../pages/Register.vue";
 import Home from "../pages/Home.vue";
 import MyAccount from "../pages/MyAccount.vue";
-import Edit from "../pages/Edit.vue";
+import UserEdit from "../pages/UserEdit.vue";
 import NotFound from "../pages/NotFound.vue";
 import Dashboard from "../pages/Dashboard.vue";
-import Admin from "../pages/Admin.vue";
+import ManageUsers from "../pages/ManageUsers.vue";
 import AdminUserEdit from "../pages/AdminUserEdit.vue";
 import CreateAdmin from "../pages/CreateAdmin.vue";
 import MoreDetails from "../pages/MoreDetails.vue";
@@ -52,16 +52,16 @@ const routes = [
     component: MyAccount,
   },
   {
-    path: "/edit",
-    component: Edit,
+    path: "/useredit",
+    component: UserEdit,
   },
   /*  {
     path: "/dashboard",
     component: Dashboard,
   }, */
   {
-    path: "/admin",
-    component: Admin,
+    path: "/manageusers",
+    component: ManageUsers,
   },
   {
     path: "/createadmin",

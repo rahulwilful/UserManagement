@@ -53,7 +53,7 @@ export default {
           this.$router.push(`/resetpassword/${this.form.email}/${paramsotp}`);
         }, 1500);
       } catch (err) {
-        console.error(err); // Log the error object, not 'object'
+        console.error("error", err); // Log the error object, not 'object'
         if (err.response.status == 404) {
           toast.error("User does not exist", {
             autoClose: 1500,

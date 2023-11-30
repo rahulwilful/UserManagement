@@ -77,10 +77,16 @@
           </div>
         </div>
       </div>
-      <!-- Goggle login option -->
+      <!-- Google login option -->
       <div v-if="!isSignedUp" class="row mt-5">
-        <div class="container d-flex justify-content-center align-items-center">
-          <GoogleLogin :callback="handleGoogleLogin" />
+        <div class="container d-flex justify-content-center align-items-center mt-5">
+          <div class="card" style="width: 18rem">
+            <div class="card-body shadow-lg">
+              <div class="my-5">
+                <GoogleLogin :callback="handleGoogleLogin" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -92,6 +98,7 @@ import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 import axios from "axios";
 import { decodeCredential } from "vue3-google-login";
+
 export default {
   name: "GoogleSignIn",
   data() {
@@ -140,18 +147,14 @@ export default {
             console.log("error in getting role_types");
           }
         });
-
         this.departments = departmentData.data.result;
         this.role_types = role_typeData.data.result;
         this.role_types = this.role_types.filter((roles) => roles.name !== "Admin");
-        //console.log("department: ", this.departments);
-        //console.log("role_types: ", this.role_types);
       } catch (e) {
         console.log("error: ", e);
       }
     },
-    async handleSubmit(e) {
-      //e.preventDefault();
+    async handleSubmit() {
       this.error = [];
       for (const item in this.form) {
         if (this.form[item] === "" || this.form[item].length === 0) {
@@ -163,9 +166,6 @@ export default {
       if (this.error.length === 0) {
         try {
           const response = await axios.post("http://localhost:3001/user/add", this.form);
-          console.log("Role_typeId: ", this.form.role_type);
-          // Handle success, e.g., show a success message
-          console.log("User registered successfully", response.data);
           toast.success("Registerd successfully", {
             autoClose: 1500,
           });
@@ -173,7 +173,6 @@ export default {
             this.$router.push("/login");
           }, 1500);
         } catch (error) {
-          // Handle errors, e.g., show an error message
           console.error("Error registering user", error);
           if (error.response.status == 403) {
             toast.error("only admin can create admin", {

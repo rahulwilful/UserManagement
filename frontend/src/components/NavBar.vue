@@ -15,7 +15,7 @@
             </li>
 
             <li class="nav-item" v-if="form.role_type == 'Admin'">
-              <router-link class="nav-link active" aria-current="page" to="/admin">Manage Users</router-link>
+              <router-link class="nav-link active" aria-current="page" to="/manageusers">Manage Users</router-link>
             </li>
             <li class="nav-item" v-if="form.role_type == 'Admin'">
               <button v-if="newUserCount !== 0" type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -77,7 +77,7 @@
                     <router-link class="nav-link active" aria-current="page" to="/myaccount">My Account</router-link>
                   </li>
                   <li class="nav-item">
-                    <router-link class="nav-link active" aria-current="page" to="/edit">Edit Account</router-link>
+                    <router-link class="nav-link active" aria-current="page" to="/useredit">Edit Account</router-link>
                   </li>
                   <li><hr class="dropdown-divider" /></li>
                   <li>
@@ -119,46 +119,6 @@ export default {
       newUserCount: 0,
     };
   },
-  components: {},
-  methods: {
-    async approveUser(id) {
-      try {
-        const userDetails = await axios.post(`http://localhost:3001/user/approveuser/${id}`).catch((err) => {
-          console.log(err);
-        });
-        console.log(userDetails);
-        this.newUsers = this.newUsers.filter((user) => user._id !== id);
-        this.newUserCount--;
-        toast.success("approved " + userDetails.data.result.name, {
-          autoClose: 1500,
-        });
-      } catch {
-        toast.error("Something went wrong", {
-          autoClose: 1500,
-        });
-        console.log("error: ", e);
-      }
-    },
-    logout() {
-      const token = localStorage.getItem("token");
-      console.log("token: ", token);
-      if (!token) {
-        toast.error("You Are Already Logged Out", {
-          autoClose: 1500,
-        });
-      } else {
-        localStorage.removeItem("token");
-
-        toast.info("Log Out Sucessfull", {
-          autoClose: 1500,
-        });
-        setTimeout(() => {
-          this.$router.go(0);
-        }, 1500);
-      }
-    },
-  },
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////
   async created() {
     const auth = {
       headers: {
@@ -173,10 +133,8 @@ export default {
           this.$router.push("/login");
         }
       });
-      //console.log("token : ", token);
-
       this.id = token.data.data._id;
-      //console.log("ID : ", this.id);
+
       const userDetails = await axios.get(`http://localhost:3001/user/get/${this.id}`).catch((err) => {
         console.log(err);
       });
@@ -188,11 +146,47 @@ export default {
       });
       this.newUsers = newUsers.data;
       this.newUserCount = Object.keys(this.newUsers).length;
-      //console.log("number of new user: ", this.newUserCount);
-      console.log(this.newUsers);
     } catch (e) {
       console.log("error: ", e);
     }
+  },
+
+  methods: {
+    async approveUser(id) {
+      try {
+        const userDetails = await axios.post(`http://localhost:3001/user/approveuser/${id}`).catch((err) => {
+          console.log(err);
+        });
+        this.newUsers = this.newUsers.filter((user) => user._id !== id);
+        this.newUserCount--;
+        toast.success("approved " + userDetails.data.result.name, {
+          autoClose: 1500,
+        });
+      } catch {
+        toast.error("Something went wrong", {
+          autoClose: 1500,
+        });
+        console.log("error: ", e);
+      }
+    },
+
+    logout() {
+      const token = localStorage.getItem("token");
+      console.log("token: ", token);
+      if (!token) {
+        toast.error("You Are Already Logged Out", {
+          autoClose: 1500,
+        });
+      } else {
+        localStorage.removeItem("token");
+        toast.info("Log Out Sucessfull", {
+          autoClose: 1500,
+        });
+        setTimeout(() => {
+          this.$router.go(0);
+        }, 1500);
+      }
+    },
   },
 };
 </script>

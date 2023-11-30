@@ -88,7 +88,7 @@
                     </div>
                   </div>
 
-                  <!-- /////////////////////////////////// New colunn starts /////////////////////////////// -->
+                  <!-- /////////////////////////////////// New column starts /////////////////////////////// -->
                   <div class="col-md-6">
                     <div class="form-check mb-3">
                       <label class="form-check-label" for="flexCheckDefault">Whatsapp Number </label>
@@ -156,11 +156,88 @@ export default {
     };
   },
 
+  async beforeCreate() {
+    const auth = {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    };
+
+    try {
+      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
+        console.log(err);
+        if (err.response.status == 401) {
+          this.$router.push("/login");
+        }
+      });
+      const id = token.data.data._id;
+
+      const userDetails = await axios.get(`http://localhost:3001/user/get/${id}`).catch((err) => {
+        console.log(err);
+      });
+      if (userDetails.data.role_type.name !== "Admin") {
+        this.$router.push("/");
+      }
+    } catch (e) {
+      console.log("error: ", e);
+    }
+  },
+
+  async created() {
+    const auth = {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    };
+
+    try {
+      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
+        console.log(err);
+        if (err.response.status == 401) {
+          this.$router.push("/login");
+        }
+      });
+
+      console.log("ID : ", this.userId);
+      const userDetails = await axios.get(`http://localhost:3001/user/get/${this.userId}`).catch((err) => {
+        console.log(err);
+      });
+      this.form.name = userDetails.data.name;
+      this.form.mobile_no = userDetails.data.mobile_no;
+      this.form.email = userDetails.data.email;
+      this.form.facebook = userDetails.data.facebook;
+      this.form.instagram = userDetails.data.instagram;
+      this.form.whatsapp_status = userDetails.data.whatsapp_status;
+      this.form.whatsapp_no = userDetails.data.whatsapp_no;
+      this.form.department = userDetails.data.department._id;
+      this.form.role_type = userDetails.data.role_type._id;
+      this.form.profile = userDetails.data.profile;
+      this.id = userDetails.data._id;
+
+      const departmentData = await axios.get("http://localhost:3001/department/getalldepts").catch((err) => {
+        console.log(err);
+        if (err.response.status == 401) {
+          console.log("error in getting departments");
+        }
+      });
+      this.departments = departmentData.data.result;
+
+      const role_typeData = await axios.get("http://localhost:3001/role_type/getallrole_types").catch((err) => {
+        console.log(err);
+        if (err.response.status == 401) {
+          console.log("error in getting role_types");
+        }
+      });
+      this.role_types = role_typeData.data.result;
+    } catch (e) {
+      console.log("error: ", e);
+    }
+  },
+
   methods: {
     async handleSubmit() {
       try {
         const response = await axios.post(`http://localhost:3001/user/adminuserupdate/${this.id}`, this.form);
-        // Handle success, e.g., show a success message
         console.log("User updated successfully", response.data);
         toast.success("User updated successfully", {
           autoClose: 1500,
@@ -168,9 +245,7 @@ export default {
         setTimeout(() => {
           this.$router.go(0);
         }, 1500);
-        // this.$router.push("/login");
       } catch (error) {
-        // Handle errors, e.g., show an error message
         console.error("Error updating user details", error);
         if (error.response.status == 400) {
           toast.error("check all the required feilds ", {
@@ -183,10 +258,9 @@ export default {
         }
       }
     },
-    ////////////////////////////////////////////////////////////////////////////////////////////////
+
     async handleFileChange(event) {
       const file = event.target.files[0];
-
       if (file) {
         try {
           const base64String = await this.convertToBase64(file);
@@ -199,130 +273,36 @@ export default {
         }
       }
     },
+
     convertToBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
-
         reader.onload = () => {
           resolve(reader.result.split(",")[1]);
         };
-
         reader.onerror = (error) => {
           reject(error);
         };
-
         reader.readAsDataURL(file);
       });
     },
-    ////////////////////////////////////////////////////////////////////////////////////////////////
+
     async changeProfile() {
       console.log(this.form.newProfile);
       try {
         const response = await axios.post(`http://localhost:3001/user/updateprofile/${this.id}`, this.form);
-        // Handle success, e.g., show a success message
         console.log("User updated successfully", response.data);
         toast.success("Profile updated successfully", {
           autoClose: 1500,
         });
         this.$router.go(0);
-        // this.$router.push("/login");
       } catch (error) {
-        // Handle errors, e.g., show an error message
         console.error("Error updating profile", error);
-
         toast.error("Something went wrong", {
           autoClose: 1500,
         });
       }
     },
-  },
-  async beforeCreate() {
-    const auth = {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    };
-    // console.log(auth);
-    //Checking for Role_type admin else redirect to dashboard
-    try {
-      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
-        console.log(err);
-        if (err.response.status == 401) {
-          //checking if logged in esle redirect to login
-          this.$router.push("/login");
-        }
-      });
-      //console.log(token);
-      const id = token.data.data._id;
-      // console.log("ID : ", id);
-      const userDetails = await axios.get(`http://localhost:3001/user/get/${id}`).catch((err) => {
-        console.log(err);
-      });
-      // console.log(userDetails.data.role_type.name);
-      if (userDetails.data.role_type.name !== "Admin") {
-        this.$router.push("/");
-      }
-    } catch (e) {
-      console.log("error: ", e);
-    }
-  },
-  //Retriveing user details
-  async created() {
-    const auth = {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    };
-    // console.log(auth);
-    try {
-      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
-        console.log(err);
-        if (err.response.status == 401) {
-          this.$router.push("/login");
-        }
-      });
-      //console.log(this.userId);
-      //this.id = token.data.data._id;
-      console.log("ID : ", this.userId);
-      const userDetails = await axios.get(`http://localhost:3001/user/get/${this.userId}`).catch((err) => {
-        console.log(err);
-      });
-      //console.log(userDetails);
-      this.form.name = userDetails.data.name;
-      this.form.mobile_no = userDetails.data.mobile_no;
-      this.form.email = userDetails.data.email;
-      this.form.facebook = userDetails.data.facebook;
-      this.form.instagram = userDetails.data.instagram;
-      this.form.whatsapp_status = userDetails.data.whatsapp_status;
-      this.form.whatsapp_no = userDetails.data.whatsapp_no;
-      this.form.department = userDetails.data.department._id;
-      this.form.role_type = userDetails.data.role_type._id;
-      this.form.profile = userDetails.data.profile;
-      this.id = userDetails.data._id;
-    } catch (e) {
-      console.log("error: ", e);
-    }
-
-    try {
-      const departmentData = await axios.get("http://localhost:3001/department/getalldepts").catch((err) => {
-        console.log(err);
-        if (err.response.status == 401) {
-          console.log("error in getting departments");
-        }
-      });
-
-      const role_typeData = await axios.get("http://localhost:3001/role_type/getallrole_types").catch((err) => {
-        console.log(err);
-        if (err.response.status == 401) {
-          console.log("error in getting role_types");
-        }
-      });
-
-      this.departments = departmentData.data.result;
-      this.role_types = role_typeData.data.result;
-    } catch (e) {
-      console.log("error: ", e);
-    }
   },
 };
 </script>
