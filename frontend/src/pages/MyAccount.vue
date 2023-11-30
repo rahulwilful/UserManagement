@@ -83,6 +83,7 @@
 
 <script>
 import axios from "axios";
+
 export default {
   name: "MyAccount",
   data() {
@@ -129,8 +130,11 @@ export default {
       this.whatsapp_no = userDetails.data.whatsapp_no;
       this.department = userDetails.data.department.name;
       this.role_type = userDetails.data.role_type.name;
-      this.joining_date = userDetails.data.createDate;
       this.profile = userDetails.data.profile;
+      const rawJoiningDate = userDetails.data.createDate;
+      const formattedJoiningDate = new Date(rawJoiningDate).toLocaleDateString();
+
+      this.joining_date = formattedJoiningDate;
     } catch (e) {
       console.log("error: ", e);
     }

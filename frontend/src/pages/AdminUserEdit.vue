@@ -198,7 +198,6 @@ export default {
         }
       });
 
-      console.log("ID : ", this.userId);
       const userDetails = await axios.get(`http://localhost:3001/user/get/${this.userId}`).catch((err) => {
         console.log(err);
       });

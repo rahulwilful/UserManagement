@@ -81,7 +81,6 @@ import "vue3-toastify/dist/index.css";
 export default {
   name: "CreateAdmin",
   data() {
-    //This the way u return any value or property
     return {
       form: {
         name: "",
