@@ -5,8 +5,7 @@
 </template>
 
 <script>
-import axios from "axios";
-
+import axiosClient from "../axiosClient";
 export default {
   name: "Home",
   methods: {
@@ -22,7 +21,7 @@ export default {
     };
 
     try {
-      await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
+      await axiosClient.get("user/getcurrentuser/", auth).catch((err) => {
         console.log(err);
         if (err.response.status == 401) {
           this.$router.push("/login");

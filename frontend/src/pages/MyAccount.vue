@@ -1,5 +1,7 @@
 <template>
   <div class="container-xl px-4 mt-4">
+    <router-link to="useredit" class="btn btn-primary my-2" tabindex="-1" role="button"> Edit <i class="bi bi-pencil"></i></router-link>
+
     <div class="row">
       <div class="col-xl-4">
         <!-- Profile picture card-->
@@ -7,7 +9,7 @@
           <div class="card-header">Profile Picture</div>
           <div class="card-body text-center">
             <!-- Profile picture image-->
-            <img v-if="profile" class="img-account-profile rounded-circle mb-2" :src="profile" alt="Profile Picture" />
+            <img v-if="profile" class="img-account-profile rounded-circle mb-2" :src="'http://localhost:3001/profiles/' + profile" alt="Profile Picture" style="width: 270px; height: 300px" />
             <img v-else class="img-account-profile rounded-circle mb-2" src="../assets/profile-circle.svg" alt="Default Profile Picture" />
 
             <!-- Profile picture help block-->
@@ -78,11 +80,14 @@
         </div>
       </div>
     </div>
+
+    <div></div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import axiosClient from "../axiosClient";
 
 export default {
   name: "MyAccount",
@@ -99,6 +104,7 @@ export default {
       role_type: "",
       joining_date: "",
       profile: "",
+      tempProfile: "",
     };
   },
   async created() {
@@ -109,7 +115,7 @@ export default {
     };
 
     try {
-      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
+      const token = await axiosClient.get("user/getcurrentuser/", auth).catch((err) => {
         console.log(err);
         if (err.response.status == 401) {
           this.$router.push("/login");
@@ -117,7 +123,7 @@ export default {
       });
       this.id = token.data.data._id;
 
-      const userDetails = await axios.get(`http://localhost:3001/user/get/${this.id}`).catch((err) => {
+      const userDetails = await axiosClient.get(`user/get/${this.id}`).catch((err) => {
         console.log(err);
       });
       console.log(userDetails);
@@ -131,13 +137,31 @@ export default {
       this.department = userDetails.data.department.name;
       this.role_type = userDetails.data.role_type.name;
       this.profile = userDetails.data.profile;
+
       const rawJoiningDate = userDetails.data.createDate;
       const formattedJoiningDate = new Date(rawJoiningDate).toLocaleDateString();
-
       this.joining_date = formattedJoiningDate;
+      /* console.log("tempProfile", this.tempProfile);
+
+      this.profile = await axios.get(`http://localhost:3001/profiles/${this.tempProfile}`);
+      const base64Image = await this.convertBinaryToBase64(this.profile.data);
+
+      this.profile = base64Image;
+      console.log("Profile", this.profile); */
     } catch (e) {
       console.log("error: ", e);
     }
   },
+  /* 
+  methods: {
+    async convertBinaryToBase64(binaryData) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(new Blob([binaryData]));
+      });
+    },
+  }, */
 };
 </script>

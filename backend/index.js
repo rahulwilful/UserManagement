@@ -4,6 +4,7 @@ const cors = require("cors");
 const connectToMongo = require("./config/db.js");
 const multer = require("multer");
 const User = require("./models/User");
+const path = require("path");
 
 connectToMongo();
 
@@ -16,9 +17,11 @@ app.get("/", (req, res) => {
   return res.status(200).send("Welcome To Back-End");
 });
 
+app.use(express.static("public"));
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "profiles/");
+    cb(null, "public/profiles/");
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now();

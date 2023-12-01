@@ -14,6 +14,7 @@
 
 <script>
 import axios from "axios";
+import axiosClient from "../axiosClient";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 
@@ -43,7 +44,7 @@ export default {
       var templateID = "template_1yz2kb1";
 
       try {
-        await axios.post("http://localhost:3001/user/varifyemail", this.form);
+        await axiosClient.post("user/varifyemail", this.form);
         await emailjs.send(serviceID, templateID, params);
         toast.success("OTP Sent", {
           autoClose: 1500,

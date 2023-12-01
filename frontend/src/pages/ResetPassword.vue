@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import axiosClient from "../axiosClient";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 
@@ -74,7 +74,7 @@ export default {
       }
       console.log(this.form.email);
       if (this.error.length === 0 && this.form.password == this.form.confirmPassword) {
-        const response = await axios.post("http://localhost:3001/user/resetpassword", this.form).catch((err) => {
+        const response = await axiosClient.post("user/resetpassword", this.form).catch((err) => {
           console.error("Error , Somthing went wrong", err);
           toast.error("Somthing went wrong", {
             autoClose: 1500,

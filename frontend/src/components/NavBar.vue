@@ -70,15 +70,14 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <img src="../assets/profile-circle copy.svg" />
+                  <img v-if="form.profile" class="img-account-profile rounded-circle mb-2" :src="'http://localhost:3001/profiles/' + form.profile" alt="Profile Picture" style="width: 23px; height: 23px" />
+                  <img v-else src="../assets/profile-circle copy.svg" />
                 </a>
                 <ul class="dropdown-menu">
                   <li class="nav-item">
                     <router-link class="nav-link active" aria-current="page" to="/myaccount">My Account</router-link>
                   </li>
-                  <li class="nav-item">
-                    <router-link class="nav-link active" aria-current="page" to="/useredit">Edit Account</router-link>
-                  </li>
+
                   <li><hr class="dropdown-divider" /></li>
                   <li>
                     <div class="d-flex justify-content-center align-items-center">
@@ -95,7 +94,6 @@
               </li>
             </ul>
           </div>
-          <!-- ///////////////////////////////////////////////////////////////////////////// -->
         </div>
       </div>
     </nav>
@@ -103,7 +101,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import axiosClient from "../axiosClient";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 export default {
@@ -113,6 +111,7 @@ export default {
       form: {
         name: "",
         role_type: "",
+        profile: "",
       },
       id: "",
       newUsers: [],
@@ -127,7 +126,7 @@ export default {
     };
 
     try {
-      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
+      const token = await axiosClient.get("user/getcurrentuser/").catch((err) => {
         console.log(err);
         if (err.response.status == 401) {
           this.$router.push("/login");
@@ -135,13 +134,14 @@ export default {
       });
       this.id = token.data.data._id;
 
-      const userDetails = await axios.get(`http://localhost:3001/user/get/${this.id}`).catch((err) => {
+      const userDetails = await axiosClient.get(`user/get/${this.id}`).catch((err) => {
         console.log(err);
       });
       this.form.name = userDetails.data.name;
       this.form.role_type = userDetails.data.role_type.name;
+      this.form.profile = userDetails.data.profile;
 
-      const newUsers = await axios.get(`http://localhost:3001/user/getnewusers/`).catch((err) => {
+      const newUsers = await axiosClient.get(`user/getnewusers/`).catch((err) => {
         console.log(err);
       });
       this.newUsers = newUsers.data;
@@ -154,7 +154,7 @@ export default {
   methods: {
     async approveUser(id) {
       try {
-        const userDetails = await axios.post(`http://localhost:3001/user/approveuser/${id}`).catch((err) => {
+        const userDetails = await axiosClient.post(`user/approveuser/${id}`).catch((err) => {
           console.log(err);
         });
         this.newUsers = this.newUsers.filter((user) => user._id !== id);

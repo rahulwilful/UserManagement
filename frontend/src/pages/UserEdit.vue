@@ -8,7 +8,7 @@
           <div class="card-body text-center">
             <!-- Profile picture image-->
 
-            <img v-if="form.profile" class="img-account-profile rounded-circle mb-2" :src="profile" alt="Profile Picture" />
+            <img v-if="form.profile" class="img-account-profile rounded-circle mb-2" :src="'http://localhost:3001/profiles/' + form.profile" alt="Profile Picture" style="width: 270px; height: 300px" />
             <img v-else class="img-account-profile rounded-circle mb-2" src="../assets/profile-circle.svg" alt="Default Profile Picture" />
 
             <!-- Profile picture help block-->
@@ -115,6 +115,7 @@
 
 <script>
 import axios from "axios";
+import axiosClient from "../axiosClient";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 
@@ -148,7 +149,7 @@ export default {
       },
     };
     try {
-      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
+      const token = await axiosClient.get("user/getcurrentuser/", auth).catch((err) => {
         console.log(err);
         if (err.response.status == 401) {
           this.$router.push("/login");
@@ -156,7 +157,7 @@ export default {
       });
       this.id = token.data.data._id;
 
-      const userDetails = await axios.get(`http://localhost:3001/user/get/${this.id}`).catch((err) => {
+      const userDetails = await axiosClient.get(`user/get/${this.id}`).catch((err) => {
         console.log(err);
       });
       this.form.name = userDetails.data.name;
@@ -187,7 +188,7 @@ export default {
       }
       if (this.error.length === 0) {
         try {
-          const response = await axios.post(`http://localhost:3001/user/update/${this.id}`, this.form);
+          const response = await axiosClient.post(`user/update/${this.id}`, this.form);
           console.log("User updated successfully", response.data);
           toast.success("User updated successfully", {
             autoClose: 1500,
@@ -214,32 +215,25 @@ export default {
       this.form.newProfile = event.target.files[0];
     },
 
-    convertToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          resolve(reader.result.split(",")[1]);
-        };
-        reader.onerror = (error) => {
-          reject(error);
-        };
-        reader.readAsDataURL(file);
-      });
-    },
-
     async changeProfile() {
       console.log(this.form.newProfile);
+      if (!this.form.newProfile) {
+        toast.error("Please select a valid image", {
+          autoClose: 1500,
+        });
+        return;
+      }
       const formData = new FormData();
       formData.append("file", this.form.newProfile);
       try {
-        /* const result = await axios.post(`https://api.cloudinary.com/v1_1/drp5eeosr/image/upload/file=${this.form.newProfile}&upload_preset=images_preset`);
-        console.log(result); */
-        const response = await axios.post(`http://localhost:3001/user/upload/${this.id}`, formData);
+        const response = await axiosClient.post(`user/upload/${this.id}`, formData);
         console.log("User updated successfully", response.data);
         toast.success("Profile updated successfully", {
           autoClose: 1500,
         });
-        this.$router.go(0);
+        setTimeout(() => {
+          this.$router.go(0);
+        }, 1500);
       } catch (error) {
         console.error("Error updating profile", error);
         toast.error("Something went wrong", {

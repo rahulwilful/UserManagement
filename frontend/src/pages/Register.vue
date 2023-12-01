@@ -82,7 +82,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import axiosClient from "../axiosClient";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 
@@ -110,7 +110,7 @@ export default {
 
   async created() {
     try {
-      const departmentData = await axios.get("http://localhost:3001/department/getalldepts").catch((err) => {
+      const departmentData = await axiosClient.get("department/getalldepts").catch((err) => {
         console.log(err);
         if (err.response.status == 401) {
           console.log("error in getting departments");
@@ -118,7 +118,7 @@ export default {
       });
       this.departments = departmentData.data.result;
 
-      const role_typeData = await axios.get("http://localhost:3001/role_type/getallrole_types").catch((err) => {
+      const role_typeData = await axiosClient.get("role_type/getallrole_types").catch((err) => {
         console.log("error", err);
         if (err.response.status == 401) {
           console.log("error in getting role_types");
@@ -143,7 +143,7 @@ export default {
       }
       if (this.error.length === 0) {
         try {
-          const response = await axios.post("http://localhost:3001/user/add", this.form);
+          const response = await axiosClient.post("user/add", this.form);
           console.log("Role_typeId: ", this.form.role_type);
 
           console.log("User registered successfully", response.data);

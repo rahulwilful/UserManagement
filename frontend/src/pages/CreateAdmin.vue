@@ -74,9 +74,9 @@
 </template>
 
 <script>
-import axios from "axios";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
+import axiosClient from "../axiosClient";
 
 export default {
   name: "CreateAdmin",
@@ -108,7 +108,7 @@ export default {
       },
     };
     try {
-      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
+      const token = await axiosClient.get("user/getcurrentuser/", auth).catch((err) => {
         console.log(err);
         if (err.response.status == 401) {
           this.$router.push("/login");
@@ -116,7 +116,7 @@ export default {
       });
       const id = token.data.data._id;
 
-      const userDetails = await axios.get(`http://localhost:3001/user/get/${id}`).catch((err) => {
+      const userDetails = await axiosClient.get(`user/get/${id}`).catch((err) => {
         console.log(err);
       });
       if (userDetails.data.role_type.name !== "Admin") {
@@ -134,7 +134,7 @@ export default {
       },
     };
     try {
-      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
+      const token = await axiosClient.get("user/getcurrentuser/", auth).catch((err) => {
         console.log(err);
         if (err.response.status == 401) {
           this.$router.push("/login");
@@ -142,18 +142,18 @@ export default {
       });
       this.id = token.data.data._id;
 
-      const departmentData = await axios.get("http://localhost:3001/department/getalldepts").catch((err) => {
+      const departmentData = await axiosClient.get("department/getalldepts").catch((err) => {
         console.log(err);
         if (err.response.status == 401) {
-          // this.$router.push("/login");
+          console.log("error in getting departments");
         }
       });
       this.departments = departmentData.data.result;
 
-      const role_typeData = await axios.get("http://localhost:3001/role_type/getallrole_types").catch((err) => {
+      const role_typeData = await axiosClient.get("role_type/getallrole_types").catch((err) => {
         console.log(err);
         if (err.response.status == 401) {
-          //this.$router.push("/login");
+          console.log("error in getting role_types");
         }
       });
       this.role_types = role_typeData.data.result;
@@ -176,14 +176,14 @@ export default {
 
       if (this.error.length === 0) {
         try {
-          const response = await axios.post(`http://localhost:3001/user/createadmin/${this.id}`, this.form);
+          const response = await axiosClient.post(`user/createadmin/${this.id}`, this.form);
           console.log("Role_typeId: ", this.form.role_type);
           console.log("User registered successfully", response.data);
           toast.success("Admin Created", {
             autoClose: 1500,
           });
           setTimeout(() => {
-            this.$router.push("/admin");
+            this.$router.push("/manageusers");
           }, 1500);
         } catch (error) {
           console.error("Error registering user", error);

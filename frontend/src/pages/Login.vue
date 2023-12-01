@@ -43,6 +43,7 @@ import { decodeCredential } from "vue3-google-login";
 import axios from "axios";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
+import axiosClient from "../axiosClient";
 
 export default {
   name: "Login",
@@ -58,12 +59,11 @@ export default {
 
   methods: {
     async handleGoogleLogin(response) {
-      console.log("logged in");
       const user = decodeCredential(response.credential);
       console.log(user.email);
       this.form.email = user.email;
 
-      const googleResponse = await axios.post("http://localhost:3001/user/googlelogin", this.form).catch((err) => {
+      const googleResponse = await axiosClient.post("user/googlelogin", this.form).catch((err) => {
         console.log(err);
         if (err.response.status == 404) {
           toast.error("User does not exist", {
@@ -100,7 +100,7 @@ export default {
       }
 
       if (this.error.length === 0) {
-        const response = await axios.post("http://localhost:3001/user/login", this.form).catch((err) => {
+        const response = await axiosClient.post("user/login", this.form).catch((err) => {
           console.log(err);
           if (err.response.status == 404) {
             toast.error("User does not exist", {

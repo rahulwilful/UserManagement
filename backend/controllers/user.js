@@ -181,6 +181,7 @@ const GetUserById = async (req, res) => {
     const user = await User.findById({ _id: userId })
       .populate({ path: "department", select: ["name", "value", "active"] })
       .populate({ path: "role_type" });
+
     logger.info(`${ip}: API /api/v1/user/get/:id | responnded with "Got user by ID succesfully" `);
     return res.status(201).json(user);
   } catch {
@@ -196,7 +197,7 @@ const GetUsers = async (req, res) => {
   const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
 
   try {
-    const allUsers = await User.find({ approved: true }).populate({ path: "department" }).populate({ path: "role_type" });
+    const allUsers = await User.find().populate({ path: "department" }).populate({ path: "role_type" });
     logger.info(`${ip}: API /api/v1/user/getallusers | responnded with "Fetchd all the users" `);
     return res.status(200).json(allUsers);
   } catch (e) {
@@ -285,6 +286,40 @@ const ApproveUser = async (req, res) => {
       },
       {
         approved: true,
+      }
+    );
+    logger.info(`${ip}: API /api/v1/user/approveuser/:id | responded with "New user approved" `);
+
+    return res.status(201).json({ result: user });
+  } catch (e) {
+    logger.error(`${ip}: API /api/v1/user/approveuser/:id  responnded with Error "while approving new user" `);
+    return res.status(500).json(e, " Something went wrong while updating profile");
+  }
+};
+
+//@desc UnApprove User API
+//@route GET /api/v1/user/unapproveuser/:id
+//@access Public
+const UnApproveUser = async (req, res) => {
+  const errors = validationResult(req); //checking for validations
+  const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress; //wats remote address?
+
+  const id = req.params.id;
+  const data = matchedData(req);
+  console.log(data.newProfile);
+
+  if (!errors.isEmpty()) {
+    logger.error(`${ip}: API /api/v1/user/updateprofile responded with Error `);
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const user = await User.findOneAndUpdate(
+      {
+        _id: id,
+      },
+      {
+        approved: false,
       }
     );
     logger.info(`${ip}: API /api/v1/user/approveuser/:id | responded with "New user approved" `);
@@ -526,6 +561,7 @@ module.exports = {
   GetCurrentUser,
   UpdateProfile,
   ApproveUser,
+  UnApproveUser,
   GetNewUsers,
   CreateAdmin,
   GoogleLogIn,

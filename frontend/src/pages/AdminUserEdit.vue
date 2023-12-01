@@ -7,7 +7,7 @@
           <div class="card-header">Profile Picture</div>
           <div class="card-body text-center">
             <!-- Profile picture image-->
-            <img v-if="form.profile" class="img-account-profile rounded-circle mb-2" :src="profile" alt="Profile Picture" />
+            <img v-if="form.profile" class="img-account-profile rounded-circle mb-2" :src="'http://localhost:3001/profiles/' + form.profile" alt="Profile Picture" style="width: 270px; height: 300px" />
             <img v-else class="img-account-profile rounded-circle mb-2" src="../assets/profile-circle.svg" alt="Default Profile Picture" />
 
             <!-- Profile picture help block-->
@@ -46,6 +46,7 @@
           </div>
         </div>
       </div>
+
       <div class="col-xl-8">
         <!-- Account details card -->
         <div class="card mb-4">
@@ -121,9 +122,9 @@
 </template>
 
 <script>
-import axios from "axios";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
+import axiosClient from "../axiosClient";
 
 export default {
   name: "AdminUserEdit",
@@ -164,7 +165,7 @@ export default {
     };
 
     try {
-      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
+      const token = await axiosClient.get("user/getcurrentuser/", auth).catch((err) => {
         console.log(err);
         if (err.response.status == 401) {
           this.$router.push("/login");
@@ -172,7 +173,7 @@ export default {
       });
       const id = token.data.data._id;
 
-      const userDetails = await axios.get(`http://localhost:3001/user/get/${id}`).catch((err) => {
+      const userDetails = await axiosClient.get(`user/get/${id}`).catch((err) => {
         console.log(err);
       });
       if (userDetails.data.role_type.name !== "Admin") {
@@ -191,14 +192,14 @@ export default {
     };
 
     try {
-      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
+      const token = await axiosClient.get("user/getcurrentuser/", auth).catch((err) => {
         console.log(err);
         if (err.response.status == 401) {
           this.$router.push("/login");
         }
       });
 
-      const userDetails = await axios.get(`http://localhost:3001/user/get/${this.userId}`).catch((err) => {
+      const userDetails = await axiosClient.get(`user/get/${this.userId}`).catch((err) => {
         console.log(err);
       });
       this.form.name = userDetails.data.name;
@@ -213,7 +214,7 @@ export default {
       this.form.profile = userDetails.data.profile;
       this.id = userDetails.data._id;
 
-      const departmentData = await axios.get("http://localhost:3001/department/getalldepts").catch((err) => {
+      const departmentData = await axiosClient.get("department/getalldepts").catch((err) => {
         console.log(err);
         if (err.response.status == 401) {
           console.log("error in getting departments");
@@ -221,7 +222,7 @@ export default {
       });
       this.departments = departmentData.data.result;
 
-      const role_typeData = await axios.get("http://localhost:3001/role_type/getallrole_types").catch((err) => {
+      const role_typeData = await axiosClient.get("role_type/getallrole_types").catch((err) => {
         console.log(err);
         if (err.response.status == 401) {
           console.log("error in getting role_types");
@@ -236,7 +237,7 @@ export default {
   methods: {
     async handleSubmit() {
       try {
-        const response = await axios.post(`http://localhost:3001/user/adminuserupdate/${this.id}`, this.form);
+        const response = await axiosClient.post(`user/adminuserupdate/${this.id}`, this.form);
         console.log("User updated successfully", response.data);
         toast.success("User updated successfully", {
           autoClose: 1500,
@@ -289,7 +290,7 @@ export default {
     async changeProfile() {
       console.log(this.form.newProfile);
       try {
-        const response = await axios.post(`http://localhost:3001/user/updateprofile/${this.id}`, this.form);
+        const response = await axiosClient.post(`user/updateprofile/${this.id}`, this.form);
         console.log("User updated successfully", response.data);
         toast.success("Profile updated successfully", {
           autoClose: 1500,

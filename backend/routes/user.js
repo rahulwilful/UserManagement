@@ -1,10 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
-const multer = require("multer");
-//const upload = require("../middleWare/saveProfile.js")
 const validateToken = require("../middleWare/validateToken.js");
-const { testUserAPI, CreateUser, CreateAdmin, AdminUserUpdate, ResetPasword, VarifyEmail, LogInUser, GoogleLogIn, UpdateUser, DeleteUser, GetNewUsers, GetUserById, GetUsers, GetCurrentUser, ApproveUser, UpdateProfile } = require("../controllers/user");
+const { testUserAPI, CreateUser, CreateAdmin, UnApproveUser, AdminUserUpdate, ResetPasword, VarifyEmail, LogInUser, GoogleLogIn, UpdateUser, DeleteUser, GetNewUsers, GetUserById, GetUsers, GetCurrentUser, ApproveUser, UpdateProfile } = require("../controllers/user");
 
 //@desc Admin User Update API
 //@route GET /api/v1/user/adminuserupdate
@@ -154,26 +152,19 @@ router.get("/getnewusers", GetNewUsers);
 //@access Public
 router.get("/getcurrentuser", validateToken, GetCurrentUser);
 
+//@desc Update User API
+//@route POST /api/v1/user/updateprofile/:id
+//@access Public
+//router.post("/updateprofile/:id", [body("newProfile", "Profile picture not found").notEmpty()], UpdateProfile);
+
 //@desc Approve Users API
 //@route POST /api/v1/user/approve/:id
 //@access Public
 router.post("/approveuser/:id", ApproveUser);
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "../profiles/");
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now();
-    cb(null, uniqueSuffix + file.originalname);
-  },
-});
-
-const upload = multer({ storage: storage });
-
-//@desc Update User API
-//@route POST /api/v1/user/updateprofile/:id
+//@desc UnApprove Users API
+//@route POST /api/v1/user/unapprove/:id
 //@access Public
-router.post("/updateprofile/:id", upload.single("file"), [body("file", "Profile picture not found").notEmpty()], UpdateProfile);
+router.post("/unapproveuser/:id", UnApproveUser);
 
 module.exports = router;
