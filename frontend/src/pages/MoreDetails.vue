@@ -85,6 +85,7 @@
 import axios from "axios";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
+import axiosClient from "../axiosClient";
 
 export default {
   name: "MoreDetails",
@@ -121,7 +122,7 @@ export default {
     };
     // console.log(auth);
     try {
-      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
+      const token = await axiosClient.get("user/getcurrentuser/", auth).catch((err) => {
         console.log(err);
         if (err.response.status == 401) {
           this.$router.push("/login");
@@ -141,7 +142,7 @@ export default {
     };
     // console.log(auth);
     try {
-      const token = await axios.get("http://localhost:3001/user/getcurrentuser/", auth).catch((err) => {
+      const token = await axiosClient.get("user/getcurrentuser/", auth).catch((err) => {
         console.log(err);
         if (err.response.status == 401) {
           this.$router.push("/login");
@@ -150,7 +151,7 @@ export default {
       //console.log(this.userId);
       //this.id = token.data.data._id;
       console.log("ID : ", this.userId);
-      const userDetails = await axios.get(`http://localhost:3001/user/get/${this.userId}`).catch((err) => {
+      const userDetails = await axiosClient.get(`user/get/${this.userId}`).catch((err) => {
         console.log(err);
       });
       //console.log(userDetails);

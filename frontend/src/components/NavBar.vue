@@ -70,7 +70,7 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <img v-if="form.profile" class="img-account-profile rounded-circle mb-2" :src="'http://localhost:3001/profiles/' + form.profile" alt="Profile Picture" style="width: 23px; height: 23px" />
+                  <img v-if="form.profile" class="img-account-profile rounded-circle mb-2" :src="profile_url + form.profile" alt="Profile Picture" style="width: 23px; height: 23px" />
                   <img v-else src="../assets/profile-circle copy.svg" />
                 </a>
                 <ul class="dropdown-menu">
@@ -116,6 +116,7 @@ export default {
       id: "",
       newUsers: [],
       newUserCount: 0,
+      profile_url: "",
     };
   },
   async created() {
@@ -137,6 +138,7 @@ export default {
       const userDetails = await axiosClient.get(`user/get/${this.id}`).catch((err) => {
         console.log(err);
       });
+      console.log(userDetails);
       this.form.name = userDetails.data.name;
       this.form.role_type = userDetails.data.role_type.name;
       this.form.profile = userDetails.data.profile;
@@ -146,6 +148,12 @@ export default {
       });
       this.newUsers = newUsers.data;
       this.newUserCount = Object.keys(this.newUsers).length;
+
+      const profile_url = await axiosClient.get(`config/`).catch((err) => {
+        console.log(err);
+      });
+
+      this.profile_url = profile_url.data.result[0].profile_url;
     } catch (e) {
       console.log("error: ", e);
     }

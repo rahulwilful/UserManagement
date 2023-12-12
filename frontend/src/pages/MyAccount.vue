@@ -9,7 +9,7 @@
           <div class="card-header">Profile Picture</div>
           <div class="card-body text-center">
             <!-- Profile picture image-->
-            <img v-if="profile" class="img-account-profile rounded-circle mb-2" :src="'http://localhost:3001/profiles/' + profile" alt="Profile Picture" style="width: 270px; height: 300px" />
+            <img v-if="profile" class="img-account-profile rounded-circle mb-2" :src="profile_url + profile" alt="Profile Picture" style="width: 270px; height: 300px" />
             <img v-else class="img-account-profile rounded-circle mb-2" src="../assets/profile-circle.svg" alt="Default Profile Picture" />
 
             <!-- Profile picture help block-->
@@ -105,6 +105,7 @@ export default {
       joining_date: "",
       profile: "",
       tempProfile: "",
+      profile_url: "",
     };
   },
   async created() {
@@ -141,13 +142,10 @@ export default {
       const rawJoiningDate = userDetails.data.createDate;
       const formattedJoiningDate = new Date(rawJoiningDate).toLocaleDateString();
       this.joining_date = formattedJoiningDate;
-      /* console.log("tempProfile", this.tempProfile);
-
-      this.profile = await axios.get(`http://localhost:3001/profiles/${this.tempProfile}`);
-      const base64Image = await this.convertBinaryToBase64(this.profile.data);
-
-      this.profile = base64Image;
-      console.log("Profile", this.profile); */
+      const profile_url = await axiosClient.get(`config/`).catch((err) => {
+        console.log(err);
+      });
+      this.profile_url = profile_url.data.result[0].profile_url;
     } catch (e) {
       console.log("error: ", e);
     }

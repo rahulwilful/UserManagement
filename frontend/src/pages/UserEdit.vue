@@ -8,7 +8,7 @@
           <div class="card-body text-center">
             <!-- Profile picture image-->
 
-            <img v-if="form.profile" class="img-account-profile rounded-circle mb-2" :src="'http://localhost:3001/profiles/' + form.profile" alt="Profile Picture" style="width: 270px; height: 300px" />
+            <img v-if="form.profile" class="img-account-profile rounded-circle mb-2" :src="profile_url + form.profile" alt="Profile Picture" style="width: 270px; height: 300px" />
             <img v-else class="img-account-profile rounded-circle mb-2" src="../assets/profile-circle.svg" alt="Default Profile Picture" />
 
             <!-- Profile picture help block-->
@@ -139,6 +139,8 @@ export default {
       id: "",
       selectedImage: null,
       base64Image: null,
+      sample: "",
+      profile_url: "",
     };
   },
 
@@ -171,6 +173,11 @@ export default {
       this.form.role_type = userDetails.data.role_type.name;
       this.form.profile = userDetails.data.profile;
       this.id = userDetails.data._id;
+
+      const profile_url = await axiosClient.get(`config/`).catch((err) => {
+        console.log(err);
+      });
+      this.profile_url = profile_url.data.result[0].profile_url;
     } catch (e) {
       console.log("error: ", e);
     }

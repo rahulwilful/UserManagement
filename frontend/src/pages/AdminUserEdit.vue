@@ -7,7 +7,7 @@
           <div class="card-header">Profile Picture</div>
           <div class="card-body text-center">
             <!-- Profile picture image-->
-            <img v-if="form.profile" class="img-account-profile rounded-circle mb-2" :src="'http://localhost:3001/profiles/' + form.profile" alt="Profile Picture" style="width: 270px; height: 300px" />
+            <img v-if="form.profile" class="img-account-profile rounded-circle mb-2" :src="profile_url + form.profile" alt="Profile Picture" style="width: 270px; height: 300px" />
             <img v-else class="img-account-profile rounded-circle mb-2" src="../assets/profile-circle.svg" alt="Default Profile Picture" />
 
             <!-- Profile picture help block-->
@@ -18,7 +18,7 @@
             <div>
               <!-- Profile picture upload button-->
               <!-- Button trigger modal -->
-              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Change Profile</button>
+              <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Change Profile</button> -->
 
               <!-- Modal for image upload -->
               <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -154,6 +154,7 @@ export default {
       role_types: "",
       selectedImage: null,
       base64Image: null,
+      profile_url: "",
     };
   },
 
@@ -229,6 +230,11 @@ export default {
         }
       });
       this.role_types = role_typeData.data.result;
+
+      const profile_url = await axiosClient.get(`config/`).catch((err) => {
+        console.log(err);
+      });
+      this.profile_url = profile_url.data.result[0].profile_url;
     } catch (e) {
       console.log("error: ", e);
     }
@@ -289,13 +295,23 @@ export default {
 
     async changeProfile() {
       console.log(this.form.newProfile);
+      if (!this.form.newProfile) {
+        toast.error("Please select a valid image", {
+          autoClose: 1500,
+        });
+        return;
+      }
+      const formData = new FormData();
+      formData.append("file", this.form.newProfile);
       try {
-        const response = await axiosClient.post(`user/updateprofile/${this.id}`, this.form);
+        const response = await axiosClient.post(`user/upload/${this.userId}`, formData);
         console.log("User updated successfully", response.data);
         toast.success("Profile updated successfully", {
           autoClose: 1500,
         });
-        this.$router.go(0);
+        setTimeout(() => {
+          this.$router.go(0);
+        }, 1500);
       } catch (error) {
         console.error("Error updating profile", error);
         toast.error("Something went wrong", {
